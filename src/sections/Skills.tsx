@@ -15,18 +15,18 @@ interface SkillCategoryProps {
 
 const SkillCategory: React.FC<SkillCategoryProps> = ({ title, icon, skills, delay = 0 }) => {
   return (
-    <AnimatedSection delay={delay} className="tech-card">
-      <div className="text-blue-600 dark:text-blue-400 mb-4 text-3xl">
+    <AnimatedSection delay={delay} className="tech-card group">
+      <div className="text-blue-600 dark:text-blue-400 mb-4 text-3xl transform transition-all duration-300 group-hover:scale-110 group-hover:text-purple-600 dark:group-hover:text-purple-400">
         {icon}
       </div>
-      <h3 className="text-xl font-bold mb-4 text-gray-800 dark:text-white">{title}</h3>
+      <h3 className="text-xl font-bold mb-4 text-gray-800 dark:text-white transition-colors duration-300 group-hover:text-blue-600 dark:group-hover:text-blue-400">{title}</h3>
       <div className="flex flex-wrap justify-center gap-2">
         {skills.map((skill, index) => (
           <span 
             key={index}
             className="px-3 py-1 text-sm bg-gray-100 dark:bg-slate-700 text-gray-800 dark:text-gray-200 rounded-full
-                     transform transition duration-300 hover:scale-105 hover:bg-blue-100 dark:hover:bg-blue-900/30"
-            style={{ transitionDelay: `${index * 50}ms` }}
+                     transform transition-all duration-300 hover:scale-110 hover:bg-blue-200 dark:hover:bg-blue-800 hover:text-blue-800 dark:hover:text-blue-300 hover:shadow-md"
+            style={{ transitionDelay: `${index * 30}ms` }}
           >
             {skill}
           </span>
@@ -89,7 +89,12 @@ const Skills: React.FC = () => {
     <section id="skills" className="py-20 bg-white dark:bg-gray-900 overflow-hidden">
       <div className="container mx-auto px-4">
         <AnimatedSection className="mb-16 text-center">
-          <h2 className="section-heading text-gray-800 dark:text-white">Skills &amp; Technologies</h2>
+          <h2 className="section-heading text-gray-800 dark:text-white hover:text-blue-600 dark:hover:text-blue-400 transition-colors duration-300">
+            Skills &amp; Technologies
+          </h2>
+          <p className="text-gray-600 dark:text-gray-300 max-w-2xl mx-auto mt-4 hover:text-gray-800 dark:hover:text-white transition-colors duration-300">
+            My technical toolkit that I've developed and continue to expand through projects and continuous learning
+          </p>
         </AnimatedSection>
 
         {/* Moving background stripes */}
@@ -100,13 +105,14 @@ const Skills: React.FC = () => {
 
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 relative z-10">
           {skillCategories.map((category, index) => (
-            <SkillCategory 
-              key={index} 
-              title={category.title} 
-              icon={category.icon} 
-              skills={category.skills}
-              delay={index * 0.1}
-            />
+            <div key={index} className="p-5 bg-white dark:bg-slate-800 rounded-xl shadow-md hover:shadow-xl transition-all duration-500 hover:-translate-y-2 hover:shadow-blue-100 dark:hover:shadow-blue-900/20">
+              <SkillCategory 
+                title={category.title} 
+                icon={category.icon} 
+                skills={category.skills}
+                delay={index * 0.1}
+              />
+            </div>
           ))}
         </div>
       </div>
