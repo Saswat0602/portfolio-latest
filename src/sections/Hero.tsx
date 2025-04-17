@@ -1,4 +1,15 @@
-import React, { useRef, useEffect } from 'react';
+import React, { useRef, useEffect, useState } from 'react';
+import { FiGithub, FiLinkedin, FiMail } from 'react-icons/fi';
+import AnimatedSection from '../components/AnimatedSection';
+import TextAnimation from '../components/TextAnimation';
+import { useTheme } from '../hooks/useTheme';
+import LaptopAnimation from '../components/LaptopAnimation';
+import MatrixCodeRain from '../components/MatrixCodeRain';
+import userData from '../data/userData';
+import { motion } from 'framer-motion';
+
+// Real code from components for the background
+const realHeroCode1 = `import React, { useRef, useEffect } from 'react';
 import { FiGithub, FiLinkedin, FiMail } from 'react-icons/fi';
 import AnimatedSection from '../components/AnimatedSection';
 import TextAnimation from '../components/TextAnimation';
@@ -11,6 +22,129 @@ const Hero: React.FC = () => {
   const { theme } = useTheme();
   const containerRef = useRef<HTMLDivElement>(null);
   const mouseRef = useRef<{ x: number; y: number }>({ x: 0, y: 0 });
+  
+  useEffect(() => {
+    const handleMouseMove = (e: MouseEvent) => {
+      if (containerRef.current) {
+        mouseRef.current = {
+          x: e.clientX / window.innerWidth,
+          y: e.clientY / window.innerHeight,
+        };
+        
+        const elements = containerRef.current.querySelectorAll('.floating-blob');
+        elements.forEach((el) => {
+          const element = el as HTMLElement;
+          const speed = parseFloat(element.getAttribute('data-speed') || '0.05');
+          const offsetX = (mouseRef.current.x - 0.5) * speed * 100;
+          const offsetY = (mouseRef.current.y - 0.5) * speed * 100;
+          
+          element.style.transform = \`translate(\${offsetX}px, \${offsetY}px)\`;
+        });
+      }
+    };`;
+
+const realHeroCode2 = `const TextAnimation: React.FC<TextAnimationProps> = ({ 
+  text, 
+  effect = "none",
+  delay = 0,
+  duration = 0.5,
+  speed = 30,
+  className = ""
+}) => {
+  const characters = Array.from(text);
+  
+  // Different animation variants based on effect
+  const getVariants = () => {
+    switch (effect) {
+      case "fade":
+        return {
+          hidden: { opacity: 0 },
+          visible: (i: number) => ({
+            opacity: 1,
+            transition: {
+              delay: delay + i * 0.1,
+              duration: 0.5
+            }
+          })
+        };
+      case "wave":
+        return {
+          hidden: { y: 0 },
+          visible: (i: number) => ({
+            y: [0, -10, 0],
+            transition: {
+              delay: delay + i * 0.05,
+              duration: 0.8,
+              times: [0, 0.5, 1],
+              ease: "easeInOut"
+            }
+          })
+        };`;
+
+// Real code snippet component for Hero
+const RealCodeSnippet: React.FC<{ code: string, opacity: number, top: number, left: number, width: number, fontSize: number }> = ({ 
+  code, opacity, top, left, width, fontSize
+}) => {
+  return (
+    <motion.pre 
+      className="absolute font-mono opacity-0 text-blue-600/40 dark:text-blue-400/50 pointer-events-none overflow-hidden"
+      style={{ 
+        top: `${top}%`,
+        left: `${left}%`,
+        width: `${width}px`,
+        lineHeight: '1.2',
+        maxHeight: '400px',
+        fontSize: `${fontSize}px`
+      }}
+      animate={{ 
+        opacity: [0, opacity],
+        y: [10, 0] 
+      }}
+      transition={{
+        duration: 1,
+        delay: Math.random() * 0.5,
+      }}
+    >
+      {code}
+    </motion.pre>
+  );
+};
+
+const Hero: React.FC = () => {
+  const { theme } = useTheme();
+  const containerRef = useRef<HTMLDivElement>(null);
+  const mouseRef = useRef<{ x: number; y: number }>({ x: 0, y: 0 });
+  const [codeSnippets, setCodeSnippets] = useState<React.ReactNode[]>([]);
+  
+  useEffect(() => {
+    // Generate code snippets
+    const snippets = [];
+    const snippetCount = 10;
+    const codes = [realHeroCode1, realHeroCode2];
+    
+    for (let i = 0; i < snippetCount; i++) {
+      const top = 5 + Math.random() * 80;
+      const left = 5 + Math.random() * 90;
+      const opacity = 0.2 + Math.random() * 0.15;
+      const width = 150 + Math.random() * 200;
+      const fontSize = 8 + Math.random() * 2;
+      const code = codes[i % codes.length];
+      
+      snippets.push(
+        <RealCodeSnippet 
+          key={i} 
+          code={code}
+          opacity={opacity} 
+          top={top} 
+          left={left}
+          width={width}
+          fontSize={fontSize}
+        />
+      );
+    }
+    
+    setCodeSnippets(snippets);
+  }, []);
   
   useEffect(() => {
     const handleMouseMove = (e: MouseEvent) => {
@@ -60,6 +194,11 @@ const Hero: React.FC = () => {
       ref={containerRef}
       className="relative h-screen flex items-center justify-center overflow-hidden bg-gray-50 dark:bg-slate-900 dark:text-white reveal-on-theme-change"
     >
+      {/* Code background */}
+      <div className="absolute inset-0 overflow-hidden pointer-events-none">
+        {codeSnippets}
+      </div>
+      
       {/* Matrix Code Rain */}
       {theme === 'dark' && <MatrixCodeRain speed={0.8} opacity={0.15} />}
       
