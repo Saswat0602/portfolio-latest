@@ -54,7 +54,10 @@ const Contact: React.FC = () => {
       
       <div className="container mx-auto px-4 relative z-10">
         <AnimatedSection className="mb-16 text-center">
-          <h2 className="section-heading text-gray-800 dark:text-white hover:text-blue-600 dark:hover:text-blue-400 transition-colors duration-300">Get In Touch</h2>
+          <h2 className="section-heading text-gray-800 dark:text-white hover:text-blue-600 dark:hover:text-blue-400 transition-colors duration-300 relative inline-block group">
+            Get In Touch
+            <span className="absolute -bottom-2 left-0 w-0 h-1 bg-blue-600 dark:bg-blue-400 group-hover:w-full transition-all duration-500"></span>
+          </h2>
           <p className="text-gray-600 dark:text-gray-300 max-w-2xl mx-auto mt-4 hover:text-gray-800 dark:hover:text-white transition-colors duration-300">
             {userData.contact.message}
           </p>
@@ -90,7 +93,7 @@ const Contact: React.FC = () => {
                     >
                       <span className="relative">
                         {userData.footer.contact.email}
-                        <span className="absolute -bottom-0.5 left-0 w-0 h-0.5 bg-blue-600 dark:bg-blue-400 group-hover:w-full transition-all duration-500"></span>
+                        <span className="absolute -bottom-0.5 left-0 w-full h-0.5 bg-blue-600 dark:bg-blue-400 group-hover:w-full transition-all duration-500"></span>
                       </span>
                     </a>
                   </div>
