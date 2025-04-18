@@ -239,11 +239,11 @@ const Hero: React.FC = () => {
       </div>
 
       <div className="container mx-auto px-4 z-10">
-        <div className="flex flex-col md:flex-row items-center">
+        <div className="flex flex-col-reverse md:flex-row items-center">
           {/* Text content */}
-          <div className="flex-1 text-center md:text-left mb-8 md:mb-0">
+          <div className="flex-1 text-center md:text-left mt-6 md:mt-0 md:mb-0">
             <AnimatedSection direction="down" duration={0.8}>
-              <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold mb-4 relative inline-block reveal-on-theme-change">
+              <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold mb-2 sm:mb-4 relative inline-block reveal-on-theme-change">
                 <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-violet-600 dark:from-blue-400 dark:to-violet-400">
                   <TextAnimation 
                     text="Hi, I'm " 
@@ -260,7 +260,7 @@ const Hero: React.FC = () => {
             </AnimatedSection>
 
             <AnimatedSection delay={0.1} duration={0.8}>
-              <h2 className="text-xl md:text-2xl text-gray-600 dark:text-gray-300 mb-8 reveal-on-theme-change">
+              <h2 className="text-lg sm:text-xl md:text-2xl text-gray-600 dark:text-gray-300 mb-4 sm:mb-6 reveal-on-theme-change">
                 <TextAnimation 
                   text={userData.introduction}
                   effect="wave"
@@ -269,9 +269,11 @@ const Hero: React.FC = () => {
             </AnimatedSection>
 
             <AnimatedSection delay={0.2} duration={0.8}>
-              <p className="text-gray-600 dark:text-gray-400 max-w-xl mb-10 reveal-on-theme-change">
+              <p className="text-sm sm:text-base text-gray-600 dark:text-gray-400 max-w-xl mb-6 sm:mb-8 reveal-on-theme-change">
                 <TextAnimation 
-                  text={`${userData.about.description} ${userData.about.description2}`}
+                  text={window.innerWidth < 640 ? 
+                    userData.about.description : 
+                    `${userData.about.description} ${userData.about.description2}`}
                   effect="typewriter"
                   speed={15}
                 />
@@ -279,12 +281,12 @@ const Hero: React.FC = () => {
             </AnimatedSection>
 
             <AnimatedSection delay={0.3} duration={0.8}>
-              <div className="flex flex-col sm:flex-row gap-4 mb-10">
+              <div className="flex flex-col xs:flex-row gap-3 sm:gap-4 mb-6 sm:mb-8 justify-center md:justify-start">
                 <button 
                   onClick={scrollToProjects}
-                  className="px-8 py-3 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-full
-                            transition-all duration-300 transform hover:-translate-y-1 hover:shadow-lg 
-                            relative overflow-hidden group reveal-on-theme-change"
+                  className="px-6 sm:px-8 py-2.5 sm:py-3 bg-blue-600 hover:bg-blue-700 text-white text-sm sm:text-base font-medium rounded-full
+                              transition-all duration-300 transform hover:-translate-y-1 hover:shadow-lg 
+                              relative overflow-hidden group reveal-on-theme-change"
                 >
                   <span className="relative z-10">View My Work</span>
                   <span className="absolute top-0 left-0 w-full h-0 bg-blue-800 transition-all duration-300 
@@ -292,10 +294,10 @@ const Hero: React.FC = () => {
                 </button>
                 <a 
                   href="#contact" 
-                  className="px-8 py-3 border-2 border-blue-600 dark:border-blue-400 text-blue-600 dark:text-blue-400
-                           font-medium rounded-full hover:bg-blue-600 hover:text-white dark:hover:bg-blue-400 dark:hover:text-slate-900
-                           transition-all duration-300 transform hover:-translate-y-1 hover:shadow-lg
-                           relative overflow-hidden group reveal-on-theme-change"
+                  className="px-6 sm:px-8 py-2.5 sm:py-3 border-2 border-blue-600 dark:border-blue-400 text-blue-600 dark:text-blue-400
+                           text-sm sm:text-base font-medium rounded-full hover:bg-blue-600 hover:text-white dark:hover:bg-blue-400 dark:hover:text-slate-900
+                             transition-all duration-300 transform hover:-translate-y-1 hover:shadow-lg
+                             relative overflow-hidden group reveal-on-theme-change"
                 >
                   <span className="relative z-10">Contact Me</span>
                   <span className="absolute top-0 left-0 w-0 h-full bg-blue-600 dark:bg-blue-400 transition-all duration-300 
@@ -314,7 +316,7 @@ const Hero: React.FC = () => {
                             transition-all duration-300 transform hover:scale-125"
                   aria-label="GitHub"
                 >
-                  <FiGithub size={24} />
+                  <FiGithub size={22} />
                 </a>
                 <a 
                   href={userData.footer.socialLinks[1].href} 
@@ -324,7 +326,7 @@ const Hero: React.FC = () => {
                             transition-all duration-300 transform hover:scale-125"
                   aria-label="LinkedIn"
                 >
-                  <FiLinkedin size={24} />
+                  <FiLinkedin size={22} />
                 </a>
                 <a 
                   href={`mailto:${userData.about.email}`} 
@@ -332,14 +334,14 @@ const Hero: React.FC = () => {
                             transition-all duration-300 transform hover:scale-125"
                   aria-label="Email"
                 >
-                  <FiMail size={24} />
+                  <FiMail size={22} />
                 </a>
               </div>
             </AnimatedSection>
           </div>
           
-          {/* Laptop Animation */}
-          <div className="flex-1 reveal-on-theme-change">
+          {/* Laptop Animation - Hidden on very small screens, smaller on mobile */}
+          <div className="flex-1 w-full max-w-[280px] sm:max-w-none reveal-on-theme-change">
             <AnimatedSection direction="right" delay={0.5} duration={1.2}>
               <LaptopAnimation />
             </AnimatedSection>
@@ -348,10 +350,10 @@ const Hero: React.FC = () => {
       </div>
 
       {/* Scroll indicator */}
-      <div className="absolute bottom-10 left-1/2 transform -translate-x-1/2 animate-bounce reveal-on-theme-change">
-        <div className="w-6 h-10 rounded-full border-2 border-gray-400 dark:border-gray-600 flex justify-center
+      <div className="absolute bottom-6 sm:bottom-10 left-1/2 transform -translate-x-1/2 animate-bounce reveal-on-theme-change">
+        <div className="w-5 h-8 sm:w-6 sm:h-10 rounded-full border-2 border-gray-400 dark:border-gray-600 flex justify-center
                       transition-all duration-300 hover:border-blue-500 dark:hover:border-blue-400">
-          <div className="w-1 h-3 bg-gray-400 dark:bg-gray-600 rounded-full mt-2 animate-pulse
+          <div className="w-1 h-2 sm:h-3 bg-gray-400 dark:bg-gray-600 rounded-full mt-2 animate-pulse
                          transition-all duration-300 hover:bg-blue-500 dark:hover:bg-blue-400"></div>
         </div>
       </div>

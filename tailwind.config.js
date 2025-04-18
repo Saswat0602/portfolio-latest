@@ -7,6 +7,7 @@ export default {
   darkMode: 'class',
   theme: {
     screens: {
+      'xs': '480px',
       'sm': '640px',
       'md': '768px',
       'lg': '1024px',
@@ -23,6 +24,15 @@ export default {
       },
       animation: {
         'bounce-slow': 'bounce 3s infinite',
+      },
+      spacing: {
+        '18': '4.5rem',
+        '72': '18rem',
+        '84': '21rem',
+        '96': '24rem',
+      },
+      fontSize: {
+        'xxs': '0.625rem',
       },
     },
   },
