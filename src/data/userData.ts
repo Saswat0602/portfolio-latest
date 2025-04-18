@@ -1,6 +1,11 @@
 export interface ProjectData {
   project_name: string;
   code_link: string;
+  description: string;
+  image: string;
+  category: string;
+  demo_link?: string;
+  technologies: string[];
 }
 
 export interface ExperienceData {
@@ -109,27 +114,55 @@ const userData: UserData = {
   Projects: [
     {
       project_name: "Yelp-Camp",
-      code_link: "https://github.com/..."
+      code_link: "https://github.com/...",
+      description: "Yelp-Camp is a comprehensive camping platform built with modern web technologies, showcasing best practices in development and user experience. This project demonstrates skills in responsive design, state management, and API integration.",
+      image: "https://images.unsplash.com/photo-1504280390367-361c6d9f38f4?q=80&w=1000&auto=format&fit=crop",
+      category: "web",
+      demo_link: "https://example.com/yelp-camp",
+      technologies: ["React", "Node.js", "MongoDB", "Express"]
     },
     {
       project_name: "Spotify-Music-App",
-      code_link: "https://github.com/..."
+      code_link: "https://github.com/...",
+      description: "Spotify-Music-App is a music streaming application that mimics Spotify's core functionality. The project showcases advanced state management, audio processing, and integration with external APIs.",
+      image: "https://images.unsplash.com/photo-1511671782779-c97d3d27a1d4?q=80&w=1000&auto=format&fit=crop",
+      category: "web",
+      technologies: ["React", "Redux", "Web Audio API", "CSS"]
     },
     {
       project_name: "Movie-App",
-      code_link: "https://github.com/..."
+      code_link: "https://github.com/...",
+      description: "Movie-App provides users with information about movies, including ratings, descriptions, and trailers. This application demonstrates integration with movie databases and responsive design principles.",
+      image: "https://images.unsplash.com/photo-1536440136628-849c177e76a1?q=80&w=1000&auto=format&fit=crop",
+      category: "mobile",
+      demo_link: "https://example.com/movie-app",
+      technologies: ["React Native", "JavaScript", "API Integration"]
     },
     {
       project_name: "Zoom-Clone-App",
-      code_link: "https://github.com/..."
+      code_link: "https://github.com/...",
+      description: "Zoom-Clone-App is a real-time video conferencing platform that allows users to create and join meetings, chat, and share screens. This project showcases WebRTC implementation and real-time data handling.",
+      image: "https://images.unsplash.com/photo-1609921212029-bb5a28e60960?q=80&w=1000&auto=format&fit=crop",
+      category: "web",
+      demo_link: "https://example.com/zoom-clone",
+      technologies: ["WebRTC", "Socket.io", "Node.js", "React"]
     },
     {
       project_name: "Note-Taker",
-      code_link: "https://github.com/..."
+      code_link: "https://github.com/...",
+      description: "Note-Taker is a minimalist application for creating, organizing, and searching notes. This project demonstrates local storage implementation and responsive UI design.",
+      image: "https://images.unsplash.com/photo-1501504905252-473c47e087f8?q=80&w=1000&auto=format&fit=crop",
+      category: "web",
+      technologies: ["JavaScript", "HTML5", "CSS3", "LocalStorage"]
     },
     {
       project_name: "Food-Ordering-App",
-      code_link: "https://github.com/..."
+      code_link: "https://github.com/...",
+      description: "Food-Ordering-App allows users to browse restaurants, view menus, and place orders. This project showcases cart functionality, payment integration, and a smooth user experience.",
+      image: "https://images.unsplash.com/photo-1565299507177-b0ac66763828?q=80&w=1000&auto=format&fit=crop",
+      category: "mobile",
+      demo_link: "https://example.com/food-order",
+      technologies: ["React Native", "Firebase", "Redux", "Payment Gateway"]
     }
   ],
   experience: [
