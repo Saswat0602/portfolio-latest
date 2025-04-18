@@ -1,188 +1,265 @@
-import React, { useState } from 'react';
-import { FiGithub, FiExternalLink, FiArrowRight, FiCode } from 'react-icons/fi';
+import React, { useState, useEffect } from 'react';
+import { FiGithub, FiExternalLink } from 'react-icons/fi';
 import AnimatedSection from '../components/AnimatedSection';
 import userData from '../data/userData';
+import { motion } from 'framer-motion';
 
-interface ProjectCardProps {
+// Define interfaces for the project data
+interface ProjectItem {
   title: string;
-  description?: string;
-  imageSrc?: string;
-  tags?: string[];
-  githubLink: string;
-  liveLink?: string;
-  delay?: number;
+  description: string;
+  image: string;
+  category: string;
+  github?: string;
+  demo?: string;
+  technologies: string[];
 }
 
-const ProjectCard: React.FC<ProjectCardProps> = ({
-  title,
-  description = "A project built with modern web technologies.",
-  imageSrc,
-  tags = ["Web", "Development"],
-  githubLink,
-  liveLink,
-  delay = 0,
-}) => {
-  const [isHovered, setIsHovered] = useState(false);
-
-  return (
-    <AnimatedSection delay={delay} className="group">
-      <div 
-        className="relative overflow-hidden rounded-xl bg-white dark:bg-slate-800 shadow-lg hover:shadow-xl dark:shadow-blue-900/5 
-                 transform transition-all duration-500 hover:-translate-y-3 hover:shadow-blue-100 dark:hover:shadow-blue-900/20"
-        onMouseEnter={() => setIsHovered(true)}
-        onMouseLeave={() => setIsHovered(false)}
-      >
-        {/* Project Image */}
-        <div className="relative h-60 overflow-hidden">
-          {imageSrc ? (
-            <img 
-              src={imageSrc} 
-              alt={title}
-              className="w-full h-full object-cover object-center transform transition-all duration-700 group-hover:scale-110"
-            />
-          ) : (
-            <div className="w-full h-full bg-gradient-to-br from-blue-50 to-purple-50 dark:from-blue-900/20 dark:to-purple-900/20 flex items-center justify-center">
-              <FiCode className="text-4xl text-blue-400 dark:text-blue-500 animate-pulse" />
-            </div>
-          )}
-          
-          {/* Overlay on hover */}
-          <div 
-            className={`absolute inset-0 bg-gradient-to-t from-blue-600/90 to-purple-600/80 transition-opacity duration-500 flex flex-col items-center justify-center p-6
-                     ${isHovered ? 'opacity-100' : 'opacity-0'}`}
-          >
-            <p className="text-white text-center mb-4">{description}</p>
-            <div className="flex space-x-4">
-              <a 
-                href={githubLink} 
-                target="_blank" 
-                rel="noopener noreferrer"
-                className="p-2 bg-white/20 hover:bg-white/40 rounded-full transition-colors duration-300"
-                aria-label="GitHub repository"
-              >
-                <FiGithub size={20} className="text-white" />
-              </a>
-              {liveLink && (
-                <a 
-                  href={liveLink} 
-                  target="_blank" 
-                  rel="noopener noreferrer"
-                  className="p-2 bg-white/20 hover:bg-white/40 rounded-full transition-colors duration-300"
-                  aria-label="Live site"
-                >
-                  <FiExternalLink size={20} className="text-white" />
-                </a>
-              )}
-            </div>
-          </div>
-        </div>
-
-        {/* Project details */}
-        <div className="p-6 relative">
-          {/* Background hover effect */}
-          <div className="absolute inset-0 bg-gradient-to-r from-blue-50/0 via-purple-50/0 to-blue-50/0 dark:from-blue-900/0 dark:via-purple-900/0 dark:to-blue-900/0 group-hover:from-blue-50 group-hover:via-purple-50/10 group-hover:to-blue-50 dark:group-hover:from-blue-900/5 dark:group-hover:via-purple-900/10 dark:group-hover:to-blue-900/5 transition-colors duration-500"></div>
-          
-          <h3 className="text-xl font-bold text-gray-800 dark:text-white mb-2 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors duration-300 relative">
-            {title}
-          </h3>
-
-          {/* Tags */}
-          <div className="flex flex-wrap gap-2 mb-4 relative">
-            {tags.map((tag, index) => (
-              <span 
-                key={index} 
-                className="inline-block px-2 py-1 text-xs bg-blue-100 dark:bg-blue-900/30 text-blue-800 dark:text-blue-300 rounded-md
-                transition-all duration-300 transform hover:scale-105 hover:bg-blue-200 dark:hover:bg-blue-800 hover:shadow-sm"
-                style={{transitionDelay: `${index * 50}ms`}}
-              >
-                {tag}
-              </span>
-            ))}
-          </div>
-
-          {/* Links */}
-          <div className="flex justify-between items-center pt-2 relative">
-            <div className="flex space-x-3">
-              <a 
-                href={githubLink} 
-                target="_blank" 
-                rel="noopener noreferrer"
-                className="p-2 text-gray-600 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-400 transition-colors duration-300 transform hover:scale-110"
-                aria-label="GitHub repository"
-              >
-                <FiGithub size={20} />
-              </a>
-              {liveLink && (
-                <a 
-                  href={liveLink} 
-                  target="_blank" 
-                  rel="noopener noreferrer"
-                  className="p-2 text-gray-600 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-400 transition-colors duration-300 transform hover:scale-110"
-                  aria-label="Live site"
-                >
-                  <FiExternalLink size={20} />
-                </a>
-              )}
-            </div>
-            
-            <a 
-              href={githubLink} 
-              target="_blank" 
-              rel="noopener noreferrer"
-              className="text-blue-600 dark:text-blue-400 font-medium flex items-center transition-all transform group-hover:translate-x-1"
-              aria-label="View project details"
-            >
-              <span className="relative">
-                View Project
-                <span className="absolute bottom-0 left-0 w-full h-0.5 bg-blue-600 dark:bg-blue-400 group-hover:w-full transition-all duration-300"></span>
-              </span>
-              <FiArrowRight className="ml-1 transform transition-transform duration-300 group-hover:translate-x-1" />
-            </a>
-          </div>
-        </div>
-      </div>
-    </AnimatedSection>
-  );
-};
-
 const Projects: React.FC = () => {
-  // Map userData projects to the format needed by ProjectCard
-  const projects = userData.Projects.map(project => ({
+  const [activeFilter, setActiveFilter] = useState('all');
+  const [codeSnippets, setCodeSnippets] = useState<React.ReactNode[]>([]);
+
+  // Generate code snippets for background
+  useEffect(() => {
+    const generateCodeSnippets = () => {
+      const snippets = [];
+      const snippetCount = 6;
+      
+      for (let i = 0; i < snippetCount; i++) {
+        const top = 5 + Math.random() * 80;
+        const left = 5 + Math.random() * 90;
+        const opacity = 0.1 + Math.random() * 0.1;
+        const width = 150 + Math.random() * 200;
+        const fontSize = 8 + Math.random() * 2;
+        
+        snippets.push(
+          <motion.pre 
+            key={i}
+            className="absolute font-mono opacity-0 text-blue-600/40 dark:text-blue-400/50 pointer-events-none overflow-hidden"
+            style={{ 
+              top: `${top}%`,
+              left: `${left}%`,
+              width: `${width}px`,
+              lineHeight: '1.2',
+              maxHeight: '300px',
+              fontSize: `${fontSize}px`
+            }}
+            animate={{ 
+              opacity: [0, opacity],
+              y: [10, 0] 
+            }}
+            transition={{
+              duration: 1,
+              delay: Math.random() * 0.5,
+            }}
+          >
+            {`function getProject(id) {
+  const projects = [
+    { name: "Portfolio", tech: ["React", "TailwindCSS"] },
+    { name: "E-commerce", tech: ["Next.js", "MongoDB"] },
+    { name: "Dashboard", tech: ["Vue", "Firebase"] }
+  ];
+  return projects.find(p => p.id === id);
+}`}
+          </motion.pre>
+        );
+      }
+      
+      setCodeSnippets(snippets);
+    };
+    
+    generateCodeSnippets();
+  }, []);
+
+  // Create mock projects from userData.Projects
+  const mockProjects: ProjectItem[] = userData.Projects.map((project) => ({
     title: project.project_name,
-    description: "A project built with modern web technologies.",
-    tags: ["React", "JavaScript", "Web Development"],
-    githubLink: project.code_link,
+    description: `${project.project_name} is a comprehensive application built with modern web technologies, showcasing best practices in development and user experience. This project demonstrates skills in responsive design, state management, and API integration.`,
+    image: "https://images.unsplash.com/photo-1587620962725-abab7fe55159?q=80&w=1000&auto=format&fit=crop",
+    category: Math.random() > 0.5 ? "web" : "mobile",
+    github: project.code_link,
+    demo: Math.random() > 0.5 ? "https://example.com" : undefined,
+    technologies: ["React", "JavaScript", "TailwindCSS"]
   }));
 
+  // Filter projects based on active category
+  const filteredProjects = mockProjects.filter(project => 
+    activeFilter === 'all' || project.category === activeFilter
+  );
+
+  // Animation variants
+  const containerVariants = {
+    hidden: { opacity: 0 },
+    visible: {
+      opacity: 1,
+      transition: {
+        staggerChildren: 0.1
+      }
+    }
+  };
+
+  const itemVariants = {
+    hidden: { y: 20, opacity: 0 },
+    visible: {
+      y: 0,
+      opacity: 1,
+      transition: {
+        type: "spring",
+        stiffness: 100,
+        damping: 12
+      }
+    }
+  };
+
   return (
-    <section id="projects" className="py-20 bg-gray-50 dark:bg-gray-800 relative overflow-hidden">
-      {/* Background decorative elements */}
-      <div className="absolute inset-0 overflow-hidden opacity-20 pointer-events-none">
-        <div className="absolute -top-40 -left-40 w-80 h-80 bg-blue-500 opacity-20 rounded-full filter blur-3xl"></div>
-        <div className="absolute top-40 -right-20 w-60 h-60 bg-purple-500 opacity-20 rounded-full filter blur-3xl"></div>
-        <div className="absolute -bottom-20 left-20 w-40 h-40 bg-pink-500 opacity-20 rounded-full filter blur-3xl"></div>
+    <section id="projects" className="py-20 bg-gray-50 dark:bg-slate-900 overflow-hidden relative">
+      {/* Code background */}
+      <div className="absolute inset-0 overflow-hidden pointer-events-none">
+        {codeSnippets}
       </div>
       
-      <div className="container mx-auto px-4 relative z-10">
-        <AnimatedSection className="mb-16 text-center">
-          <h2 className="section-heading text-gray-800 dark:text-white hover:text-blue-600 dark:hover:text-blue-400 transition-colors duration-300 relative inline-block group">
-            My Projects
-            <span className="absolute -bottom-2 left-0 w-0 h-1 bg-blue-600 dark:bg-blue-400 group-hover:w-full transition-all duration-500"></span>
-          </h2>
-          <p className="text-gray-600 dark:text-gray-300 max-w-2xl mx-auto mt-4 hover:text-gray-800 dark:hover:text-white transition-colors duration-300">
-            A showcase of my recent development work, personal projects, and coding experiments
-          </p>
-        </AnimatedSection>
-
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-          {projects.map((project, index) => (
-            <ProjectCard 
-              key={index} 
-              {...project}
-              delay={index * 0.1} 
+      {/* Animated background elements */}
+      <div className="absolute inset-0 overflow-hidden pointer-events-none">
+        <div 
+          className="floating-blob absolute top-1/4 -left-20 w-80 h-80 bg-purple-300 dark:bg-purple-900 rounded-full mix-blend-multiply filter blur-3xl opacity-40 animate-float reveal-on-theme-change"
+          data-speed="0.05"
+        ></div>
+        <div 
+          className="floating-blob absolute top-3/4 -right-20 w-96 h-96 bg-blue-300 dark:bg-blue-900 rounded-full mix-blend-multiply filter blur-3xl opacity-40 animate-float reveal-on-theme-change" 
+          style={{ animationDelay: '2s' }}
+          data-speed="0.08"
+        ></div>
+        <div 
+          className="floating-blob absolute top-1/2 left-1/3 w-64 h-64 bg-pink-300 dark:bg-pink-900 rounded-full mix-blend-multiply filter blur-3xl opacity-40 animate-float reveal-on-theme-change" 
+          style={{ animationDelay: '4s' }}
+          data-speed="0.06"
+        ></div>
+        
+        {/* Animated particles */}
+        <div className="absolute inset-0 opacity-30">
+          {[...Array(15)].map((_, index) => (
+            <div
+              key={index}
+              className="absolute w-1 h-1 rounded-full bg-blue-600 dark:bg-white reveal-on-theme-change"
+              style={{
+                top: `${Math.random() * 100}%`,
+                left: `${Math.random() * 100}%`,
+                animation: `floatParticle ${3 + Math.random() * 5}s infinite ease-in-out`,
+                animationDelay: `${Math.random() * 5}s`,
+              }}
             />
           ))}
         </div>
+      </div>
+
+      <div className="container mx-auto px-4 relative z-10">
+        <AnimatedSection className="mb-16 text-center">
+          <h2 className="section-heading text-gray-800 dark:text-white hover:text-blue-600 dark:hover:text-blue-400 transition-colors duration-300 relative inline-block group">
+            Projects
+            <span className="absolute -bottom-2 left-0 w-0 h-1 bg-blue-600 dark:bg-blue-400 group-hover:w-full transition-all duration-500"></span>
+          </h2>
+        </AnimatedSection>
+
+        {/* Filter buttons */}
+        <div className="flex flex-wrap justify-center mb-12 gap-2 md:gap-4">
+          {['all', 'web', 'mobile', 'design'].map((filter) => (
+            <button
+              key={filter}
+              onClick={() => setActiveFilter(filter)}
+              className={`px-4 py-2 md:px-6 md:py-2.5 text-sm md:text-base rounded-full capitalize transition-all duration-300 transform hover:scale-105
+                ${activeFilter === filter 
+                  ? 'bg-blue-600 text-white shadow-lg' 
+                  : 'bg-gray-200 dark:bg-gray-800 text-gray-600 dark:text-gray-300 hover:bg-gray-300 dark:hover:bg-gray-700'
+                }`}
+            >
+              {filter}
+            </button>
+          ))}
+        </div>
+
+        {/* Projects grid */}
+        <motion.div 
+          className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8"
+          variants={containerVariants}
+          initial="hidden"
+          animate="visible"
+        >
+          {filteredProjects.map((project, index) => (
+            <motion.div
+              key={index}
+              className="group relative overflow-hidden rounded-xl shadow-lg bg-white dark:bg-gray-800 transition-all duration-300 hover:shadow-xl transform hover:-translate-y-2 h-[400px]"
+              variants={itemVariants}
+            >
+              {/* Project thumbnail with description overlay */}
+              <div className="relative h-64 overflow-hidden">
+                {/* Image (shown by default) */}
+                <img 
+                  src={project.image} 
+                  alt={project.title}
+                  className="w-full h-full object-cover transition-transform duration-700 ease-in-out group-hover:opacity-0"
+                />
+                
+                {/* Description overlay (shown on hover) */}
+                <div className="absolute inset-0 bg-blue-600 p-6 flex items-center opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                  <p className="text-white text-sm overflow-y-auto max-h-full">
+                    {project.description}
+                  </p>
+                </div>
+                
+                {/* Category badge */}
+                <div className="absolute top-4 left-4 z-10">
+                  <span className="px-3 py-1 text-xs font-medium rounded-full bg-blue-600/90 text-white">
+                    {project.category}
+                  </span>
+                </div>
+              </div>
+              
+              {/* Project details */}
+              <div className="p-5 md:p-6">
+                <h3 className="text-lg md:text-xl font-semibold text-gray-800 dark:text-white mb-2">
+                  {project.title}
+                </h3>
+                
+                <div className="flex flex-wrap gap-2 mb-4">
+                  {project.technologies.map((tech, techIndex) => (
+                    <span 
+                      key={techIndex}
+                      className="px-2 py-1 text-xs rounded-md bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300"
+                    >
+                      {tech}
+                    </span>
+                  ))}
+                </div>
+                
+                {/* Project links */}
+                <div className="flex space-x-3">
+                  {project.github && (
+                    <a 
+                      href={project.github} 
+                      target="_blank" 
+                      rel="noopener noreferrer"
+                      className="flex items-center gap-1 text-sm text-gray-600 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 transition-colors"
+                    >
+                      <FiGithub size={16} />
+                      <span>Code</span>
+                    </a>
+                  )}
+                  {project.demo && (
+                    <a 
+                      href={project.demo} 
+                      target="_blank" 
+                      rel="noopener noreferrer"
+                      className="flex items-center gap-1 text-sm text-gray-600 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 transition-colors"
+                    >
+                      <FiExternalLink size={16} />
+                      <span>Demo</span>
+                    </a>
+                  )}
+                </div>
+              </div>
+            </motion.div>
+          ))}
+        </motion.div>
       </div>
     </section>
   );

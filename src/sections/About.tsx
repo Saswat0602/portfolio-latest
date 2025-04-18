@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import AnimatedSection from '../components/AnimatedSection';
 import userData from '../data/userData';
 import { motion } from 'framer-motion';
@@ -6,6 +6,58 @@ import { FiMapPin, FiMail, FiBook, FiAward } from 'react-icons/fi';
 
 const About: React.FC = () => {
   const [isImageHovered, setIsImageHovered] = useState(false);
+  const [codeSnippets, setCodeSnippets] = useState<React.ReactNode[]>([]);
+
+  // Generate code snippets similar to Hero section
+  useEffect(() => {
+    const generateCodeSnippets = () => {
+      const snippets = [];
+      const snippetCount = 6;
+      
+      for (let i = 0; i < snippetCount; i++) {
+        const top = 5 + Math.random() * 80;
+        const left = 5 + Math.random() * 90;
+        const opacity = 0.1 + Math.random() * 0.1;
+        const width = 150 + Math.random() * 200;
+        const fontSize = 8 + Math.random() * 2;
+        
+        snippets.push(
+          <motion.pre 
+            key={i}
+            className="absolute font-mono opacity-0 text-blue-600/40 dark:text-blue-400/50 pointer-events-none overflow-hidden"
+            style={{ 
+              top: `${top}%`,
+              left: `${left}%`,
+              width: `${width}px`,
+              lineHeight: '1.2',
+              maxHeight: '300px',
+              fontSize: `${fontSize}px`
+            }}
+            animate={{ 
+              opacity: [0, opacity],
+              y: [10, 0] 
+            }}
+            transition={{
+              duration: 1,
+              delay: Math.random() * 0.5,
+            }}
+          >
+            {`function aboutMe() {
+  return {
+    name: "${userData.name}",
+    skills: ["React", "TypeScript", "UI/UX"],
+    interests: ["Web Dev", "Design", "Technology"]
+  };
+}`}
+          </motion.pre>
+        );
+      }
+      
+      setCodeSnippets(snippets);
+    };
+    
+    generateCodeSnippets();
+  }, []);
 
   const containerVariants = {
     hidden: { opacity: 0 },
@@ -29,8 +81,47 @@ const About: React.FC = () => {
   };
 
   return (
-    <section id="about" className="py-20 bg-white dark:bg-gray-900 overflow-hidden">
-      <div className="container mx-auto px-4">
+    <section id="about" className="py-20 bg-gray-50 dark:bg-slate-900 overflow-hidden relative">
+      {/* Code background */}
+      <div className="absolute inset-0 overflow-hidden pointer-events-none">
+        {codeSnippets}
+      </div>
+      
+      {/* Animated background elements similar to Hero */}
+      <div className="absolute inset-0 overflow-hidden pointer-events-none">
+        <div 
+          className="floating-blob absolute top-1/4 -left-20 w-80 h-80 bg-purple-300 dark:bg-purple-900 rounded-full mix-blend-multiply filter blur-3xl opacity-40 animate-float reveal-on-theme-change"
+          data-speed="0.05"
+        ></div>
+        <div 
+          className="floating-blob absolute top-3/4 -right-20 w-96 h-96 bg-blue-300 dark:bg-blue-900 rounded-full mix-blend-multiply filter blur-3xl opacity-40 animate-float reveal-on-theme-change" 
+          style={{ animationDelay: '2s' }}
+          data-speed="0.08"
+        ></div>
+        <div 
+          className="floating-blob absolute top-1/2 left-1/3 w-64 h-64 bg-pink-300 dark:bg-pink-900 rounded-full mix-blend-multiply filter blur-3xl opacity-40 animate-float reveal-on-theme-change" 
+          style={{ animationDelay: '4s' }}
+          data-speed="0.06"
+        ></div>
+        
+        {/* New animated particles */}
+        <div className="absolute inset-0 opacity-30">
+          {[...Array(15)].map((_, index) => (
+            <div
+              key={index}
+              className="absolute w-1 h-1 rounded-full bg-blue-600 dark:bg-white reveal-on-theme-change"
+              style={{
+                top: `${Math.random() * 100}%`,
+                left: `${Math.random() * 100}%`,
+                animation: `floatParticle ${3 + Math.random() * 5}s infinite ease-in-out`,
+                animationDelay: `${Math.random() * 5}s`,
+              }}
+            />
+          ))}
+        </div>
+      </div>
+
+      <div className="container mx-auto px-4 relative z-10">
         <AnimatedSection className="mb-16 text-center">
           <h2 className="section-heading text-gray-800 dark:text-white hover:text-blue-600 dark:hover:text-blue-400 transition-colors duration-300 relative inline-block group">
             About Me
@@ -38,7 +129,7 @@ const About: React.FC = () => {
           </h2>
         </AnimatedSection>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-12 items-center">
           <AnimatedSection direction="right" className="order-2 md:order-1">
             <motion.div 
               className="space-y-6"
@@ -47,7 +138,7 @@ const About: React.FC = () => {
               animate="visible"
             >
               <motion.h3 
-                className="text-2xl font-bold text-gray-800 dark:text-white hover:text-blue-600 dark:hover:text-blue-400 transition-colors duration-300 relative inline-block"
+                className="text-xl md:text-2xl font-bold text-gray-800 dark:text-white hover:text-blue-600 dark:hover:text-blue-400 transition-colors duration-300 relative inline-block"
                 variants={itemVariants}
               >
                 {userData.about.current_position}
@@ -68,7 +159,7 @@ const About: React.FC = () => {
               </motion.p>
 
               <motion.div 
-                className="grid grid-cols-1 sm:grid-cols-2 gap-4 mt-6"
+                className="grid grid-cols-1 sm:grid-cols-2 gap-3 mt-6"
                 variants={itemVariants}
               >
                 <motion.div 
@@ -78,7 +169,7 @@ const About: React.FC = () => {
                   <div className="w-10 h-10 rounded-full bg-blue-100 dark:bg-blue-900/30 flex items-center justify-center text-blue-600 dark:text-blue-400 mr-3 group-hover:bg-blue-200 dark:group-hover:bg-blue-800/30 transition-colors duration-300 group-hover:rotate-12 transform">
                     <FiMapPin className="group-hover:animate-pulse" />
                   </div>
-                  <span className="text-gray-600 dark:text-gray-300 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors duration-300">
+                  <span className="text-sm md:text-base text-gray-600 dark:text-gray-300 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors duration-300">
                     {userData.about.location}
                   </span>
                 </motion.div>
@@ -89,7 +180,7 @@ const About: React.FC = () => {
                   <div className="w-10 h-10 rounded-full bg-blue-100 dark:bg-blue-900/30 flex items-center justify-center text-blue-600 dark:text-blue-400 mr-3 group-hover:bg-blue-200 dark:group-hover:bg-blue-800/30 transition-colors duration-300 group-hover:rotate-12 transform">
                     <FiMail className="group-hover:animate-pulse" />
                   </div>
-                  <span className="text-gray-600 dark:text-gray-300 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors duration-300">
+                  <span className="text-sm md:text-base text-gray-600 dark:text-gray-300 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors duration-300">
                     {userData.about.email}
                   </span>
                 </motion.div>
@@ -100,7 +191,7 @@ const About: React.FC = () => {
                   <div className="w-10 h-10 rounded-full bg-blue-100 dark:bg-blue-900/30 flex items-center justify-center text-blue-600 dark:text-blue-400 mr-3 group-hover:bg-blue-200 dark:group-hover:bg-blue-800/30 transition-colors duration-300 group-hover:rotate-12 transform">
                     <FiBook className="group-hover:animate-pulse" />
                   </div>
-                  <span className="text-gray-600 dark:text-gray-300 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors duration-300">
+                  <span className="text-sm md:text-base text-gray-600 dark:text-gray-300 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors duration-300">
                     {userData.about.education.undergraduate}
                   </span>
                 </motion.div>
@@ -111,7 +202,7 @@ const About: React.FC = () => {
                   <div className="w-10 h-10 rounded-full bg-blue-100 dark:bg-blue-900/30 flex items-center justify-center text-blue-600 dark:text-blue-400 mr-3 group-hover:bg-blue-200 dark:group-hover:bg-blue-800/30 transition-colors duration-300 group-hover:rotate-12 transform">
                     <FiAward className="group-hover:animate-pulse" />
                   </div>
-                  <span className="text-gray-600 dark:text-gray-300 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors duration-300">
+                  <span className="text-sm md:text-base text-gray-600 dark:text-gray-300 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors duration-300">
                     {userData.about.education.postgraduate}
                   </span>
                 </motion.div>
@@ -119,7 +210,7 @@ const About: React.FC = () => {
 
               <motion.a 
                 href="#contact" 
-                className="inline-block mt-6 px-8 py-3 bg-blue-600 text-white font-medium rounded-full
+                className="inline-block mt-6 px-6 md:px-8 py-2 md:py-3 bg-blue-600 text-white font-medium rounded-full
                         transition-all duration-300 transform hover:-translate-y-1 hover:shadow-lg group relative overflow-hidden"
                 variants={itemVariants}
                 whileHover={{ scale: 1.05 }}
@@ -132,10 +223,10 @@ const About: React.FC = () => {
           </AnimatedSection>
 
           <AnimatedSection direction="left" className="order-1 md:order-2">
-            <div className="relative max-w-sm mx-auto md:max-w-xs overflow-visible">
+            <div className="relative max-w-xs mx-auto md:max-w-sm overflow-visible">
               {/* Animated decorative elements */}
               <motion.div 
-                className="absolute -top-6 -left-6 w-20 h-20 bg-blue-200 dark:bg-blue-900/30 rounded-lg z-0" 
+                className="absolute -top-6 -left-6 w-16 md:w-20 h-16 md:h-20 bg-blue-200 dark:bg-blue-900/30 rounded-lg z-0" 
                 animate={{ 
                   rotate: [0, 360], 
                   scale: [1, 1.2, 1],
@@ -148,7 +239,7 @@ const About: React.FC = () => {
                 }}
               ></motion.div>
               <motion.div 
-                className="absolute -bottom-6 -right-6 w-20 h-20 bg-purple-200 dark:bg-purple-900/30 rounded-lg z-0" 
+                className="absolute -bottom-6 -right-6 w-16 md:w-20 h-16 md:h-20 bg-purple-200 dark:bg-purple-900/30 rounded-lg z-0" 
                 animate={{ 
                   rotate: [0, -360], 
                   scale: [1, 1.2, 1],
@@ -162,7 +253,7 @@ const About: React.FC = () => {
                 }}
               ></motion.div>
               <motion.div 
-                className="absolute top-1/4 -right-8 w-12 h-12 bg-green-200 dark:bg-green-900/30 rounded-full z-0" 
+                className="absolute top-1/4 -right-4 md:-right-8 w-8 md:w-12 h-8 md:h-12 bg-green-200 dark:bg-green-900/30 rounded-full z-0" 
                 animate={{ 
                   y: [0, 15, 0],
                   opacity: [0.5, 0.8, 0.5]
@@ -175,7 +266,7 @@ const About: React.FC = () => {
                 }}
               ></motion.div>
               <motion.div 
-                className="absolute bottom-1/4 -left-8 w-12 h-12 bg-pink-200 dark:bg-pink-900/30 rounded-full z-0" 
+                className="absolute bottom-1/4 -left-4 md:-left-8 w-8 md:w-12 h-8 md:h-12 bg-pink-200 dark:bg-pink-900/30 rounded-full z-0" 
                 animate={{ 
                   y: [0, -15, 0],
                   opacity: [0.5, 0.8, 0.5]

@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import AnimatedSection from '../components/AnimatedSection';
 import { 
   SiReact, SiNodedotjs, SiMongodb, SiJavascript, SiCss3, SiHtml5,
@@ -26,7 +26,7 @@ const SkillCategory: React.FC<SkillCategoryProps> = ({
   delay = 0 
 }) => {
   return (
-    <AnimatedSection delay={delay} className="tech-card group h-full">
+    <AnimatedSection delay={delay} className="tech-card group h-full bg-white dark:bg-slate-800 p-6 rounded-xl shadow-md hover:shadow-xl transition-all duration-300 transform hover:-translate-y-2">
       <div className={`text-3xl mb-4 transform transition-all duration-300 group-hover:scale-110 ${color}`}>
         {icon}
       </div>
@@ -61,6 +61,60 @@ const SkillCategory: React.FC<SkillCategoryProps> = ({
 };
 
 const Skills: React.FC = () => {
+  const [codeSnippets, setCodeSnippets] = useState<React.ReactNode[]>([]);
+
+  // Generate code snippets similar to Hero section
+  useEffect(() => {
+    const generateCodeSnippets = () => {
+      const snippets = [];
+      const snippetCount = 6;
+      
+      for (let i = 0; i < snippetCount; i++) {
+        const top = 5 + Math.random() * 80;
+        const left = 5 + Math.random() * 90;
+        const opacity = 0.1 + Math.random() * 0.1;
+        const width = 150 + Math.random() * 200;
+        const fontSize = 8 + Math.random() * 2;
+        
+        snippets.push(
+          <motion.pre 
+            key={i}
+            className="absolute font-mono opacity-0 text-blue-600/40 dark:text-blue-400/50 pointer-events-none overflow-hidden"
+            style={{ 
+              top: `${top}%`,
+              left: `${left}%`,
+              width: `${width}px`,
+              lineHeight: '1.2',
+              maxHeight: '300px',
+              fontSize: `${fontSize}px`
+            }}
+            animate={{ 
+              opacity: [0, opacity],
+              y: [10, 0] 
+            }}
+            transition={{
+              duration: 1,
+              delay: Math.random() * 0.5,
+            }}
+          >
+            {`function getSkills() {
+  const skills = {
+    frontend: ["React", "JavaScript", "HTML/CSS"],
+    backend: ["Node.js", "Express", "MongoDB"],
+    tools: ["Git", "Docker", "AWS"]
+  };
+  return skills;
+}`}
+          </motion.pre>
+        );
+      }
+      
+      setCodeSnippets(snippets);
+    };
+    
+    generateCodeSnippets();
+  }, []);
+
   // Map skill names to their icons
   const skillIcons: { [key: string]: React.ReactNode } = {
     "HTML": <SiHtml5 />,
@@ -151,11 +205,50 @@ const Skills: React.FC = () => {
   ].filter(category => category.skills.length > 0);
 
   return (
-    <section id="skills" className="py-20 bg-white dark:bg-gray-900 overflow-hidden">
-      <div className="container mx-auto px-4">
+    <section id="skills" className="py-20 bg-gray-50 dark:bg-slate-900 overflow-hidden relative">
+      {/* Code background */}
+      <div className="absolute inset-0 overflow-hidden pointer-events-none">
+        {codeSnippets}
+      </div>
+      
+      {/* Animated background elements similar to Hero */}
+      <div className="absolute inset-0 overflow-hidden pointer-events-none">
+        <div 
+          className="floating-blob absolute top-1/4 -left-20 w-80 h-80 bg-purple-300 dark:bg-purple-900 rounded-full mix-blend-multiply filter blur-3xl opacity-40 animate-float reveal-on-theme-change"
+          data-speed="0.05"
+        ></div>
+        <div 
+          className="floating-blob absolute top-3/4 -right-20 w-96 h-96 bg-blue-300 dark:bg-blue-900 rounded-full mix-blend-multiply filter blur-3xl opacity-40 animate-float reveal-on-theme-change" 
+          style={{ animationDelay: '2s' }}
+          data-speed="0.08"
+        ></div>
+        <div 
+          className="floating-blob absolute top-1/2 left-1/3 w-64 h-64 bg-pink-300 dark:bg-pink-900 rounded-full mix-blend-multiply filter blur-3xl opacity-40 animate-float reveal-on-theme-change" 
+          style={{ animationDelay: '4s' }}
+          data-speed="0.06"
+        ></div>
+        
+        {/* New animated particles */}
+        <div className="absolute inset-0 opacity-30">
+          {[...Array(15)].map((_, index) => (
+            <div
+              key={index}
+              className="absolute w-1 h-1 rounded-full bg-blue-600 dark:bg-white reveal-on-theme-change"
+              style={{
+                top: `${Math.random() * 100}%`,
+                left: `${Math.random() * 100}%`,
+                animation: `floatParticle ${3 + Math.random() * 5}s infinite ease-in-out`,
+                animationDelay: `${Math.random() * 5}s`,
+              }}
+            />
+          ))}
+        </div>
+      </div>
+
+      <div className="container mx-auto px-4 relative z-10">
         <AnimatedSection className="mb-16 text-center">
           <h2 className="section-heading text-gray-800 dark:text-white hover:text-blue-600 dark:hover:text-blue-400 transition-colors duration-300 relative inline-block group">
-            Skills &amp; Technologies
+            Skills & Technologies
             <span className="absolute -bottom-2 left-0 w-0 h-1 bg-blue-600 dark:bg-blue-400 group-hover:w-full transition-all duration-500"></span>
           </h2>
           <motion.p 
@@ -167,36 +260,6 @@ const Skills: React.FC = () => {
             My technical toolkit that I've developed and continue to expand through projects and continuous learning
           </motion.p>
         </AnimatedSection>
-
-        {/* Moving background stripes with improved animations */}
-        <div className="absolute inset-0 overflow-hidden opacity-20 pointer-events-none">
-          <motion.div 
-            className="absolute -top-96 -right-40 w-[800px] h-[1000px] rotate-45 bg-gradient-to-b from-transparent via-blue-200/50 dark:via-blue-900/10 to-transparent"
-            animate={{ 
-              rotate: [45, 55, 45],
-              x: [0, 100, 0],
-              y: [0, -50, 0]
-            }}
-            transition={{ 
-              duration: 20, 
-              repeat: Infinity,
-              ease: "easeInOut"
-            }}
-          />
-          <motion.div 
-            className="absolute -bottom-96 -left-40 w-[800px] h-[1000px] rotate-45 bg-gradient-to-b from-transparent via-purple-200/50 dark:via-purple-900/10 to-transparent"
-            animate={{ 
-              rotate: [45, 35, 45],
-              x: [0, -100, 0],
-              y: [0, 50, 0]
-            }}
-            transition={{ 
-              duration: 20, 
-              repeat: Infinity,
-              ease: "easeInOut"
-            }}
-          />
-        </div>
 
         <motion.div 
           className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 relative z-10"

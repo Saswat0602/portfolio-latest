@@ -1,7 +1,8 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import AnimatedSection from '../components/AnimatedSection';
 import { FiBriefcase, FiCalendar, FiMapPin, FiClock, FiChevronRight } from 'react-icons/fi';
 import userData from '../data/userData';
+import { motion } from 'framer-motion';
 
 interface ExperienceItemProps {
   title: string;
@@ -88,17 +89,106 @@ const ExperienceItem: React.FC<ExperienceItemProps> = ({
 };
 
 const Experience: React.FC = () => {
+  const [codeSnippets, setCodeSnippets] = useState<React.ReactNode[]>([]);
+
+  // Generate code snippets for background
+  useEffect(() => {
+    const generateCodeSnippets = () => {
+      const snippets = [];
+      const snippetCount = 6;
+      
+      for (let i = 0; i < snippetCount; i++) {
+        const top = 5 + Math.random() * 80;
+        const left = 5 + Math.random() * 90;
+        const opacity = 0.1 + Math.random() * 0.1;
+        const width = 150 + Math.random() * 200;
+        const fontSize = 8 + Math.random() * 2;
+        
+        snippets.push(
+          <motion.pre 
+            key={i}
+            className="absolute font-mono opacity-0 text-blue-600/40 dark:text-blue-400/50 pointer-events-none overflow-hidden"
+            style={{ 
+              top: `${top}%`,
+              left: `${left}%`,
+              width: `${width}px`,
+              lineHeight: '1.2',
+              maxHeight: '300px',
+              fontSize: `${fontSize}px`
+            }}
+            animate={{ 
+              opacity: [0, opacity],
+              y: [10, 0] 
+            }}
+            transition={{
+              duration: 1,
+              delay: Math.random() * 0.5,
+            }}
+          >
+            {`function getWorkHistory() {
+  return [
+    { company: "HyScaler", role: "SDE 1", year: 2025 },
+    { company: "HyScaler", role: "Junior Dev", year: 2024 },
+    { company: "HyScaler", role: "Trainee", year: 2023 }
+  ];
+}`}
+          </motion.pre>
+        );
+      }
+      
+      setCodeSnippets(snippets);
+    };
+    
+    generateCodeSnippets();
+  }, []);
+
   return (
-    <section id="experience" className="py-20 bg-gray-50 dark:bg-gray-800">
-      <div className="container mx-auto px-4">
+    <section id="experience" className="py-20 bg-gray-50 dark:bg-slate-900 overflow-hidden relative">
+      {/* Code background */}
+      <div className="absolute inset-0 overflow-hidden pointer-events-none">
+        {codeSnippets}
+      </div>
+      
+      {/* Animated background elements */}
+      <div className="absolute inset-0 overflow-hidden pointer-events-none">
+        <div 
+          className="floating-blob absolute top-1/4 -left-20 w-80 h-80 bg-purple-300 dark:bg-purple-900 rounded-full mix-blend-multiply filter blur-3xl opacity-40 animate-float reveal-on-theme-change"
+          data-speed="0.05"
+        ></div>
+        <div 
+          className="floating-blob absolute top-3/4 -right-20 w-96 h-96 bg-blue-300 dark:bg-blue-900 rounded-full mix-blend-multiply filter blur-3xl opacity-40 animate-float reveal-on-theme-change" 
+          style={{ animationDelay: '2s' }}
+          data-speed="0.08"
+        ></div>
+        <div 
+          className="floating-blob absolute top-1/2 left-1/3 w-64 h-64 bg-pink-300 dark:bg-pink-900 rounded-full mix-blend-multiply filter blur-3xl opacity-40 animate-float reveal-on-theme-change" 
+          style={{ animationDelay: '4s' }}
+          data-speed="0.06"
+        ></div>
+        
+        {/* Animated particles */}
+        <div className="absolute inset-0 opacity-30">
+          {[...Array(15)].map((_, index) => (
+            <div
+              key={index}
+              className="absolute w-1 h-1 rounded-full bg-blue-600 dark:bg-white reveal-on-theme-change"
+              style={{
+                top: `${Math.random() * 100}%`,
+                left: `${Math.random() * 100}%`,
+                animation: `floatParticle ${3 + Math.random() * 5}s infinite ease-in-out`,
+                animationDelay: `${Math.random() * 5}s`,
+              }}
+            />
+          ))}
+        </div>
+      </div>
+
+      <div className="container mx-auto px-4 relative z-10">
         <AnimatedSection className="mb-16 text-center">
           <h2 className="section-heading text-gray-800 dark:text-white hover:text-blue-600 dark:hover:text-blue-400 transition-colors duration-300 relative inline-block group">
             Work Experience
             <span className="absolute -bottom-2 left-0 w-0 h-1 bg-blue-600 dark:bg-blue-400 group-hover:w-full transition-all duration-500"></span>
           </h2>
-          <p className="text-gray-600 dark:text-gray-300 max-w-2xl mx-auto mt-4 hover:text-gray-800 dark:hover:text-white transition-colors duration-300">
-            My professional journey, showcasing my growth and expertise in software development
-          </p>
         </AnimatedSection>
 
         <div className="max-w-3xl mx-auto space-y-12">

@@ -36,12 +36,12 @@ const App: React.FC = () => {
 
   return (
     <ThemeProvider>
-      <div className="relative min-h-screen dark:bg-slate-900 transition-colors dark-transition">
+      <div className="relative min-h-screen bg-gray-50 dark:bg-slate-900 transition-colors dark-transition">
         <CustomCursor />
         <StarryBackground />
         <Navbar />
         
-        <main>
+        <main className="relative z-10">
           <Hero />
           <About />
           <Experience />

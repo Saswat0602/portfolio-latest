@@ -15,8 +15,6 @@ const StarryBackground = () => {
   const isDark = theme === 'dark';
 
   useEffect(() => {
-    if (!isDark) return;
-    
     const canvas = canvasRef.current;
     if (!canvas) return;
 
@@ -56,21 +54,25 @@ const StarryBackground = () => {
     const animate = () => {
       ctx.clearRect(0, 0, canvas.width, canvas.height);
       
-      // Only render if dark mode is active
-      if (isDark) {
-        time += 0.01;
+      time += 0.01;
+      
+      stars.forEach((star) => {
+        // Calculate twinkling effect
+        const twinkle = Math.sin(time * star.twinkleSpeed * 10) * 0.5 + 0.5;
+        let opacity = star.opacity * twinkle;
         
-        stars.forEach((star) => {
-          // Calculate twinkling effect
-          const twinkle = Math.sin(time * star.twinkleSpeed * 10) * 0.5 + 0.5;
-          const opacity = star.opacity * twinkle;
-          
-          ctx.fillStyle = `rgba(255, 255, 255, ${opacity})`;
-          ctx.beginPath();
-          ctx.arc(star.x, star.y, star.size, 0, Math.PI * 2);
-          ctx.fill();
-        });
-      }
+        // Lower opacity in light mode
+        if (!isDark) {
+          opacity *= 0.3;
+        }
+        
+        // Use appropriate color based on theme
+        const starColor = isDark ? 'rgba(255, 255, 255, ' : 'rgba(0, 0, 255, ';
+        ctx.fillStyle = `${starColor}${opacity})`;
+        ctx.beginPath();
+        ctx.arc(star.x, star.y, star.size, 0, Math.PI * 2);
+        ctx.fill();
+      });
       
       animationFrameId = requestAnimationFrame(animate);
     };
@@ -82,8 +84,6 @@ const StarryBackground = () => {
       cancelAnimationFrame(animationFrameId);
     };
   }, [isDark]);
-
-  if (!isDark) return null;
 
   return (
     <canvas 
