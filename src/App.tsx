@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { lazy, useEffect } from 'react';
 import { ThemeProvider } from './context/ThemeContext';
 import Navbar from './components/Navbar';
 import StarryBackground from './components/StarryBackground';
@@ -10,6 +10,14 @@ import Projects from './sections/Projects';
 import Contact from './sections/Contact';
 import Footer from './components/Footer';
 import CustomCursor from './components/CustomCursor';
+
+const withPriorityLoading = (importFn: () => Promise<any>) => {
+  return lazy(() => {
+    const prefetchPromise = importFn();
+    return prefetchPromise;
+  });
+};
+const SplashCursor = withPriorityLoading(() => import("./reactbits/SplashCursor"));
 
 const App: React.FC = () => {
   // Add scroll observer for animations
@@ -40,6 +48,7 @@ const App: React.FC = () => {
         <CustomCursor />
         <StarryBackground />
         <Navbar />
+        <SplashCursor/>
         
         <main className="relative z-10">
           <Hero />
