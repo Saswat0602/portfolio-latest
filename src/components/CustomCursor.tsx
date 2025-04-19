@@ -2,107 +2,117 @@ import { useEffect, useState, useRef, memo } from 'react';
 import { useTheme } from '../hooks/useTheme';
 
 const CustomCursor = () => {
-  const cursorRef = useRef<HTMLDivElement>(null);
-  const [clicked, setClicked] = useState(false);
-  const [linkHovered, setLinkHovered] = useState(false);
+  const cursorOuterRef = useRef<HTMLDivElement>(null);
+  const cursorDotRef = useRef<HTMLDivElement>(null);
   const { theme } = useTheme();
-  const positionRef = useRef({ x: 0, y: 0 });
-  const requestRef = useRef<number | undefined>(undefined);
-  const lastUpdateTimeRef = useRef(0);
-  const [isEnabled, setIsEnabled] = useState(true);
   
-  // Check if device is touch-based
+  const [cursorState, setCursorState] = useState({
+    clicked: false,
+    hovered: false,
+    enabled: true,
+    x: 0,
+    y: 0
+  });
+  
+  const rafRef = useRef<number | null>(null);
+
   useEffect(() => {
-    const isTouchDevice = 'ontouchstart' in window || navigator.maxTouchPoints > 0;
-    if (isTouchDevice) {
-      setIsEnabled(false);
+    const shouldDisable = 
+      'ontouchstart' in window || 
+      navigator.maxTouchPoints > 0 || 
+      /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+    
+    if (shouldDisable) {
+      setCursorState(prev => ({ ...prev, enabled: false }));
     }
+    
+    return () => {
+      if (rafRef.current) cancelAnimationFrame(rafRef.current);
+    };
   }, []);
-  
-  // Don't render on touch devices to improve performance
-  if (!isEnabled) return null;
-  
-  // Smoother animation with RAF and throttling
-  const animateCursor = () => {
-    const now = performance.now();
-    // Throttle updates to 60fps
-    if (now - lastUpdateTimeRef.current > 16 && cursorRef.current) {
-      // Use transform for better performance
-      cursorRef.current.style.transform = `translate3d(${positionRef.current.x}px, ${positionRef.current.y}px, 0) translate(-50%, -50%)`;
-      lastUpdateTimeRef.current = now;
-    }
-    requestRef.current = requestAnimationFrame(animateCursor);
-  };
 
   useEffect(() => {
-    if (!isEnabled) return;
+    if (!cursorState.enabled) return;
     
-    // Use passive event listener for better performance and throttle updates
-    const updatePosition = (e: MouseEvent) => {
-      positionRef.current = { x: e.clientX, y: e.clientY };
+    document.documentElement.style.cursor = 'none';
+    
+    const updateCursorPosition = (e: MouseEvent) => {
+      if (rafRef.current) cancelAnimationFrame(rafRef.current);
+      
+      rafRef.current = requestAnimationFrame(() => {
+        setCursorState(prev => ({ ...prev, x: e.clientX, y: e.clientY }));
+        
+        if (cursorOuterRef.current) {
+          cursorOuterRef.current.style.transform = 
+            `translate3d(${e.clientX}px, ${e.clientY}px, 0) translate(-50%, -50%)`;
+        }
+      });
     };
-
-    const handleMouseDown = () => setClicked(true);
-    const handleMouseUp = () => setClicked(false);
     
-    // Use event delegation instead of attaching listeners to all elements
-    const handleMouseMove = (e: MouseEvent) => {
+    const handleMouseDown = () => setCursorState(prev => ({ ...prev, clicked: true }));
+    const handleMouseUp = () => setCursorState(prev => ({ ...prev, clicked: false }));
+    
+    // Use event delegation for hover detection
+    const handleMouseOver = (e: MouseEvent) => {
       const target = e.target as HTMLElement;
-      if (target && (target.tagName === 'A' || target.tagName === 'BUTTON' || 
-          target.closest('a') || target.closest('button'))) {
-        setLinkHovered(true);
-      } else {
-        setLinkHovered(false);
-      }
+      const isInteractive = 
+        target.tagName === 'A' || 
+        target.tagName === 'BUTTON' || 
+        target.closest('a') || 
+        target.closest('button') || 
+        target.closest('[role="button"]');
+      
+      setCursorState(prev => {
+        if (prev.hovered !== !!isInteractive) {
+          return { ...prev, hovered: !!isInteractive };
+        }
+        return prev;
+      });
     };
-
-    // Start animation loop
-    requestRef.current = requestAnimationFrame(animateCursor);
     
-    // Add event listeners with passive option for better performance
-    window.addEventListener('mousemove', updatePosition, { passive: true });
-    window.addEventListener('mousemove', handleMouseMove, { passive: true });
+    // Add event listeners with passive option
+    window.addEventListener('mousemove', updateCursorPosition, { passive: true });
+    window.addEventListener('mouseover', handleMouseOver, { passive: true });
     window.addEventListener('mousedown', handleMouseDown, { passive: true });
     window.addEventListener('mouseup', handleMouseUp, { passive: true });
     
-    // Hide default cursor
-    document.body.style.cursor = 'none';
-    
+    // Clean up
     return () => {
-      // Clean up
-      if (requestRef.current) {
-        cancelAnimationFrame(requestRef.current);
-      }
-      window.removeEventListener('mousemove', updatePosition);
-      window.removeEventListener('mousemove', handleMouseMove);
+      document.documentElement.style.cursor = '';
+      window.removeEventListener('mousemove', updateCursorPosition);
+      window.removeEventListener('mouseover', handleMouseOver);
       window.removeEventListener('mousedown', handleMouseDown);
       window.removeEventListener('mouseup', handleMouseUp);
-      document.body.style.cursor = 'auto';
+      if (rafRef.current) cancelAnimationFrame(rafRef.current);
     };
-  }, [isEnabled]);
+  }, [cursorState.enabled]);
 
-  const cursorSize = clicked ? 'w-6 h-6' : linkHovered ? 'w-12 h-12' : 'w-8 h-8';
+  // Don't render anything if disabled
+  if (!cursorState.enabled) return null;
+
+  // Dynamic cursor classes based on state
+  const { clicked, hovered } = cursorState;
+  const cursorSize = clicked ? 'w-5 h-5' : hovered ? 'w-10 h-10' : 'w-7 h-7';
+  const dotSize = clicked ? 'w-1.5 h-1.5' : hovered ? 'w-2.5 h-2.5' : 'w-1 h-1';
   const cursorColor = theme === 'dark' ? 'border-blue-400' : 'border-blue-600';
   
   return (
     <div 
-      ref={cursorRef}
-      className={`fixed pointer-events-none z-50 rounded-full border-2 ${cursorColor} 
-                  ${cursorSize} transition-[width,height] duration-150
-                  flex items-center justify-center will-change-transform`}
+      ref={cursorOuterRef}
+      className={`fixed pointer-events-none z-50 rounded-full border-2 ${cursorColor} ${cursorSize} 
+                  flex items-center justify-center transition-[width,height] duration-200`}
       style={{ 
-        left: 0,
-        top: 0,
-        mixBlendMode: theme === 'dark' ? 'exclusion' : 'normal' 
+        transform: `translate3d(${cursorState.x}px, ${cursorState.y}px, 0) translate(-50%, -50%)`,
+        mixBlendMode: theme === 'dark' ? 'exclusion' : 'normal',
+        willChange: 'transform'
       }}
     >
       <div 
-        className={`rounded-full bg-blue-400 dark:bg-blue-600 
-                   ${clicked ? 'w-2 h-2' : linkHovered ? 'w-3 h-3' : 'w-1 h-1'} 
-                   opacity-70 transition-all duration-150`} 
+        ref={cursorDotRef}
+        className={`rounded-full bg-blue-400 dark:bg-blue-600 ${dotSize} transition-all duration-200`}
       />
     </div>
   );
 };
 
-export default memo(CustomCursor); 
+export default memo(CustomCursor);

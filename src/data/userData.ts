@@ -75,7 +75,7 @@ const userData: UserData = {
   name: "Saswat Ranjan",
   location: "Bhubaneswar, Odisha, India",
   title: "MERN/Front-End Developer",
-  introduction: "Hi, I'm Saswat Ranjan. A passionate Front-end React Developer & MERN stack Developer based in Bhubaneswar.",
+  introduction: "Hi, I'm Saswat Ranjan. A passionate  React & React-Native Developer.",
   about: {
     current_position: "Software Development Engineer I (SDE 1) at HyScaler",
     education: {

@@ -1,64 +1,44 @@
 import React, { lazy, useEffect, useState, Suspense, memo } from 'react';
 import { ThemeProvider } from './context/ThemeContext';
 import Navbar from './components/Navbar';
-// Lazy load heavy components
-const StarryBackground = lazy(() => import('./components/StarryBackground'));
-import Hero from './sections/Hero';
-import About from './sections/About';
-import Experience from './sections/Experience';
-import Skills from './sections/Skills';
-import Projects from './sections/Projects';
-import Contact from './sections/Contact';
 import Footer from './components/Footer';
 import CustomCursor from './components/CustomCursor';
 
-// Using React.lazy with priority for code splitting
-const withPriorityLoading = (importFn: () => Promise<any>, priority = 'low') => {
-  return lazy(() => {
-    // For low priority components, delay loading
-    if (priority === 'low') {
-      return new Promise(resolve => {
-        // Wait until after first paint + 2 seconds
-        setTimeout(() => {
-          importFn().then(resolve);
-        }, 2000);
-      });
-    }
-    return importFn();
-  });
+// Lazy load components
+const StarryBackground = lazy(() => import('./components/StarryBackground'));
+const Hero = lazy(() => import('./sections/Hero'));
+const About = lazy(() => import('./sections/About'));
+const Experience = lazy(() => import('./sections/Experience'));
+const Skills = lazy(() => import('./sections/Skills'));
+const Projects = lazy(() => import('./sections/Projects'));
+const Contact = lazy(() => import('./sections/Contact'));
+const SplashCursor = lazy(() => import('./reactbits/SplashCursor'));
+
+// Component priority groups
+const PRIORITY = {
+  CRITICAL: 0,   // Load immediately
+  HIGH: 1,       // Load right after initial render
+  MEDIUM: 2,     // Load shortly after
+  LOW: 3         // Load last
 };
 
-const SplashCursor = withPriorityLoading(() => import("./reactbits/SplashCursor"), 'low');
-
 const App: React.FC = () => {
-  const [showSplashCursor, setShowSplashCursor] = useState(false);
-  const [isLoaded, setIsLoaded] = useState(false);
+  // Use a single state object to track loading progress
+  const [loadingStage, setLoadingStage] = useState(PRIORITY.CRITICAL);
+  const [sectionsInView, setSectionsInView] = useState<Record<string, boolean>>({});
 
-  // Mark as loaded after initial render
   useEffect(() => {
-    window.requestAnimationFrame(() => {
-      window.requestAnimationFrame(() => {
-        setIsLoaded(true);
-      });
-    });
-  }, []);
-
-  // Lazy load splash cursor after page load
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      setShowSplashCursor(true);
-    }, 3000); // Increase delay to 3 seconds for better initial performance
-    return () => clearTimeout(timer);
-  }, []);
-
-  // Add scroll observer for animations
-  useEffect(() => {
-    if (!isLoaded) return;
-
     const observer = new IntersectionObserver((entries) => {
       entries.forEach((entry) => {
         if (entry.isIntersecting) {
           entry.target.classList.add('active');
+
+          if (entry.target.id) {
+            setSectionsInView(prev => ({
+              ...prev,
+              [entry.target.id]: true
+            }));
+          }
         }
       });
     }, { threshold: 0.1 });
@@ -68,45 +48,92 @@ const App: React.FC = () => {
       observer.observe(el);
     });
 
-    return () => {
-      document.querySelectorAll('.scroll-animate').forEach((el) => {
-        observer.unobserve(el);
+    // Observe sections for component loading
+    document.querySelectorAll('section[id]').forEach((el) => {
+      observer.observe(el);
+    });
+
+    return () => observer.disconnect();
+  }, []);
+
+  // Progressive loading based on a stage approach
+  useEffect(() => {
+    if (loadingStage === PRIORITY.CRITICAL) {
+      // Move to next stage after initial render
+      requestAnimationFrame(() => {
+        setLoadingStage(PRIORITY.HIGH);
       });
-    };
-  }, [isLoaded]);
+    } else if (loadingStage < PRIORITY.LOW) {
+      // Progress through stages with minimal delay
+      const timer = setTimeout(() => {
+        setLoadingStage(prevStage => prevStage + 1);
+      }, loadingStage * 200); // Increasing delay based on priority
+
+      return () => clearTimeout(timer);
+    }
+  }, [loadingStage]);
+
+  // Render components based on loading stage
+  const shouldRender = {
+    hero: loadingStage >= PRIORITY.HIGH,
+    about: loadingStage >= PRIORITY.HIGH,
+    experience: loadingStage >= PRIORITY.MEDIUM,
+    background: loadingStage >= PRIORITY.MEDIUM,
+    skills: loadingStage >= PRIORITY.MEDIUM,
+    projects: loadingStage >= PRIORITY.MEDIUM,
+    contact: loadingStage >= PRIORITY.LOW,
+    splashCursor: loadingStage >= PRIORITY.LOW
+  };
 
   return (
     <ThemeProvider>
       <div className="relative min-h-screen bg-gray-50 dark:bg-slate-900 transition-colors dark-transition">
-        <CustomCursor />
-        <Suspense fallback={null}>
-          {isLoaded && <StarryBackground />}
-        </Suspense>
-        <Navbar />
-        
-        {showSplashCursor && (
+
+        {shouldRender.background && (
           <Suspense fallback={null}>
-            <SplashCursor 
-              DENSITY_DISSIPATION={5}
-              SIM_RESOLUTION={64} 
-              DYE_RESOLUTION={512} 
-            />
+            <StarryBackground />
           </Suspense>
         )}
-        
+
+        <Navbar />
+
+        {shouldRender.splashCursor && (
+          <Suspense fallback={null}>
+            <SplashCursor />
+            <CustomCursor />
+          </Suspense>
+        )}
+
         <main className="relative z-10">
-          <Hero />
-          <About />
-          <Experience />
-          <Skills />
-          <Projects />
-          <Contact />
+          <Suspense fallback={<div className="h-screen"></div>}>
+            {shouldRender.hero && <Hero />}
+          </Suspense>
+
+          <Suspense fallback={null}>
+            {shouldRender.about && <About />}
+          </Suspense>
+
+          <Suspense fallback={null}>
+            {shouldRender.experience && <Experience />}
+          </Suspense>
+
+          <Suspense fallback={null}>
+            {shouldRender.skills && <Skills />}
+          </Suspense>
+
+          <Suspense fallback={null}>
+            {shouldRender.projects && <Projects />}
+          </Suspense>
+
+          <Suspense fallback={null}>
+            {shouldRender.contact && <Contact />}
+          </Suspense>
         </main>
-        
+
         <Footer />
       </div>
     </ThemeProvider>
   );
 };
 
-export default memo(App); 
+export default memo(App);

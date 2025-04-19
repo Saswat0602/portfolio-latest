@@ -326,7 +326,7 @@ const About: React.FC = () => {
                       animate={{ scale: isImageHovered ? 1 : 0 }}
                       transition={{ duration: 0.4, delay: 0.1 }}
                     >
-                      Web Developer
+                      App Developer
                     </motion.span>
                   </motion.div>
                 </div>
