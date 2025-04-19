@@ -3,6 +3,7 @@ import AnimatedSection from '../components/AnimatedSection';
 import { FiBriefcase, FiCalendar, FiMapPin, FiClock, FiChevronRight } from 'react-icons/fi';
 import userData from '../data/userData';
 import { motion } from 'framer-motion';
+import { realHeroCode1 } from '../data/realHeroCode';
 
 interface ExperienceItemProps {
   title: string;
@@ -125,13 +126,8 @@ const Experience: React.FC = () => {
               delay: Math.random() * 0.5,
             }}
           >
-            {`function getWorkHistory() {
-  return [
-    { company: "HyScaler", role: "SDE 1", year: 2025 },
-    { company: "HyScaler", role: "Junior Dev", year: 2024 },
-    { company: "HyScaler", role: "Trainee", year: 2023 }
-  ];
-}`}
+            {realHeroCode1}
+
           </motion.pre>
         );
       }

@@ -6,9 +6,8 @@ import {
   SiRedux, SiTypescript, SiNextdotjs, SiPython, SiGraphql, SiMysql, 
   SiPostgresql, SiDjango, SiC, SiSwift
 } from 'react-icons/si';
-import { DiJava } from 'react-icons/di';
-import userData from '../data/userData';
-import { motion } from 'framer-motion';
+import { DiJava } from 'react-icons/di';import { motion } from 'framer-motion';
+import { realHeroCode1 } from '../data/realHeroCode';
 
 interface SkillCategoryProps {
   title: string;
@@ -97,14 +96,8 @@ const Skills: React.FC = () => {
               delay: Math.random() * 0.5,
             }}
           >
-            {`function getSkills() {
-  const skills = {
-    frontend: ["React", "JavaScript", "HTML/CSS"],
-    backend: ["Node.js", "Express", "MongoDB"],
-    tools: ["Git", "Docker", "AWS"]
-  };
-  return skills;
-}`}
+            {realHeroCode1}
+
           </motion.pre>
         );
       }

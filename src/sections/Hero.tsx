@@ -7,169 +7,10 @@ import LaptopAnimation from '../components/LaptopAnimation';
 // Lazy load heavy components
 const MatrixCodeRain = lazy(() => import('../components/MatrixCodeRain'));
 import userData from '../data/userData';
-import { motion } from 'framer-motion';
+import { realHeroCode1, realHeroCode2 } from '../data/realHeroCode';
+import RealCodeSnippet from '../widget/RealCodeSnippet';
 
-// Real code from components for the background
-const realHeroCode1 = ` return (
-    <nav 
-       'bg-transparent py-3'
-    >
-      <div className="container mx-auto px-4 flex justify-between items-center">
-        {/* Logo */}
-        <a 
-          href="#" 
-          className="text-xl sm:text-2xl font-bold text-blue-600 dark:text-blue-400 flex items-center"
-        >
-          <TextAnimation 
-            text="Saswat.dev" 
-            effect="pressure"
-            className="animate-slide-in" 
-          />
-        </a>
 
-        {/* Desktop Navigation */}
-        <div className="hidden md:flex items-center space-x-6 lg:space-x-8">
-          {navLinks.map((link, index) => (
-            <a
-              key={link.name}
-              href={link.href}
-        
-              <TextAnimation 
-                text={link.name} 
-                effect="glow"
-              />
-            </a>
-          ))}
-
-          {/* Theme Toggle Button */}
-          <button
-            id="theme-toggle"
-            onClick={toggleTheme}
-            disabled={isTransitioning}
-            className="p-2 rounded-full bg-gray-100 dark:bg-slate-800 text-gray-800 dark:text-gray-200 
-                      hover:bg-gray-200 dark:hover:bg-slate-700 transition-colors animate-fade-in"
-            aria-label="Toggle theme"
-          >
-            
-          </button>
-        </div>
-
-        {/* Mobile Menu Button */}
-        <div className="md:hidden flex items-center space-x-2">
-          <button
-            id="theme-toggle-mobile"
-            onClick={toggleTheme}
-            disabled={isTransitioning}
-            className="p-1.5 rounded-full bg-gray-100 dark:bg-slate-800 text-gray-800 dark:text-gray-200 
-                    hover:bg-gray-200 dark:hover:bg-slate-700 transition-colors"
-            aria-label="Toggle theme"
-          >
-            {theme === 'dark' ? (
-              <FiSun size={18} className="transition-transform duration-300 hover:rotate-45" />
-            ) : (
-              <FiMoon size={18} className="transition-transform duration-300 hover:rotate-45" />
-            )}
-          </button>
-
-          <button
-            onClick={toggleMobileMenu}
-            className="p-1.5 rounded-full bg-gray-100 dark:bg-slate-800 text-gray-800 dark:text-gray-200 
-                    hover:bg-gray-200 dark:hover:bg-slate-700 transition-colors"
-            aria-label="Toggle mobile menu"
-          >
-            {mobileMenuOpen ? <FiX size={18} /> : <FiMenu size={18} />}
-          </button>
-        </div>
-      </div>
-
-      {/* Mobile Menu */}
-      {mobileMenuOpen && (
-        <div className="md:hidden fixed top-[56px] left-0 w-full h-auto max-h-[calc(100vh-56px)] overflow-auto 
-                      bg-white/95 dark:bg-slate-900/95 backdrop-blur-md shadow-lg py-3 px-4 
-                      animate-slide-up border-t border-gray-200 dark:border-slate-800 z-40">
-          <div className="flex flex-col space-y-3">
-            {navLinks.map((link, index) => (
-              <a
-                key={link.name}
-                href={link.href}
-                onClick={() => setMobileMenuOpen(false)}
-                
-              >
-                {link.name}
-              </a>
-            ))}
-          </div>
-        </div>
-      )}
-    </nav>
-  );`;
-
-const realHeroCode2 = `const TextAnimation: React.FC<TextAnimationProps> = ({ 
-  text, 
-  effect = "none",
-  delay = 0,
-  duration = 0.5,
-  speed = 30,
-  className = ""
-}) => {
-  const characters = Array.from(text);
-  
-  // Different animation variants based on effect
-  const getVariants = () => {
-    switch (effect) {
-      case "fade":
-        return {
-          hidden: { opacity: 0 },
-          visible: (i: number) => ({
-            opacity: 1,
-            transition: {
-              delay: delay + i * 0.1,
-              duration: 0.5
-            }
-          })
-        };
-      case "wave":
-        return {
-          hidden: { y: 0 },
-          visible: (i: number) => ({
-            y: [0, -10, 0],
-            transition: {
-              delay: delay + i * 0.05,
-              duration: 0.8,
-              times: [0, 0.5, 1],
-              ease: "easeInOut"
-            }
-          })
-        };`;
-
-// Real code snippet component for Hero
-const RealCodeSnippet: React.FC<{ code: string, opacity: number, top: number, left: number, width: number, fontSize: number }> = ({ 
-  code, opacity, top, left, width, fontSize
-}) => {
-  return (
-    <motion.pre 
-      className="absolute font-mono opacity-0 text-blue-600/40 dark:text-blue-400/50 pointer-events-none overflow-hidden"
-      style={{ 
-        top: `${top}%`,
-        left: `${left}%`,
-        width: `${width}px`,
-        lineHeight: '1.2',
-        maxHeight: '400px',
-        fontSize: `${fontSize}px`
-      }}
-      animate={{ 
-        opacity: [0, opacity],
-        y: [10, 0] 
-      }}
-      transition={{
-        duration: 1,
-        delay: Math.random() * 0.5,
-      }}
-    >
-      {code}
-    </motion.pre>
-  );
-};
 
 const Hero: React.FC = () => {
   const { theme } = useTheme();
@@ -194,30 +35,36 @@ const Hero: React.FC = () => {
   useEffect(() => {
     if (!isClientSide) return;
     
-    // Generate code snippets - reduce count for better performance
     const snippets = [];
-    const snippetCount = 15; // Reduced from 10
+    const snippetsPerRow = 5; 
+    const rowCount = 2;        
     const codes = [realHeroCode1, realHeroCode2];
     
-    for (let i = 0; i < snippetCount; i++) {
-      const top = 5 + Math.random() * 80;
-      const left = 5 + Math.random() * 90;
-      const opacity = 0.2 + Math.random() * 0.15;
-      const width = 150 + Math.random() * 200;
-      const fontSize = 8 + Math.random() * 2;
-      const code = codes[i % codes.length];
+    for (let row = 0; row < rowCount; row++) {
+      const baseTop = 15 + (row * 30); 
       
-      snippets.push(
-        <RealCodeSnippet 
-          key={i} 
-          code={code}
-          opacity={opacity} 
-          top={top} 
-          left={left}
-          width={width}
-          fontSize={fontSize}
-        />
-      );
+      for (let i = 0; i < snippetsPerRow; i++) {
+        const baseLeft = (i / snippetsPerRow) * 85; 
+        
+        const top = baseTop + (Math.random() * 10 - 5); 
+        const left = baseLeft + (Math.random() * 10 - 5); 
+        const opacity = 0.2 + Math.random() * 0.15;
+        const width = 150 + Math.random() * 400;
+        const fontSize = 8 + Math.random() * 2;
+        const code = codes[(row * snippetsPerRow + i) % codes.length];
+        
+        snippets.push(
+          <RealCodeSnippet 
+            key={`${row}-${i}`} 
+            code={code}
+            opacity={opacity} 
+            top={top} 
+            left={left}
+            width={width}
+            fontSize={fontSize}
+          />
+        );
+      }
     }
     
     setCodeSnippets(snippets);

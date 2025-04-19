@@ -3,6 +3,7 @@ import { FiMail, FiMapPin, FiSend, FiPhone } from 'react-icons/fi';
 import AnimatedSection from '../components/AnimatedSection';
 import userData from '../data/userData';
 import { motion } from 'framer-motion';
+import { realHeroCode1 } from '../data/realHeroCode';
 
 const Contact: React.FC = () => {
   const [formData, setFormData] = useState({
@@ -20,19 +21,19 @@ const Contact: React.FC = () => {
     const generateCodeSnippets = () => {
       const snippets = [];
       const snippetCount = 6;
-      
+
       for (let i = 0; i < snippetCount; i++) {
         const top = 5 + Math.random() * 80;
         const left = 5 + Math.random() * 90;
         const opacity = 0.1 + Math.random() * 0.1;
         const width = 150 + Math.random() * 200;
         const fontSize = 8 + Math.random() * 2;
-        
+
         snippets.push(
-          <motion.pre 
+          <motion.pre
             key={i}
             className="absolute font-mono opacity-0 text-blue-600/40 dark:text-blue-400/50 pointer-events-none overflow-hidden"
-            style={{ 
+            style={{
               top: `${top}%`,
               left: `${left}%`,
               width: `${width}px`,
@@ -40,33 +41,24 @@ const Contact: React.FC = () => {
               maxHeight: '300px',
               fontSize: `${fontSize}px`
             }}
-            animate={{ 
+            animate={{
               opacity: [0, opacity],
-              y: [10, 0] 
+              y: [10, 0]
             }}
             transition={{
               duration: 1,
               delay: Math.random() * 0.5,
             }}
           >
-            {`function sendMessage(form) {
-  const { name, email, subject, message } = form;
-  
-  return fetch('/api/contact', {
-    method: 'POST',
-    body: JSON.stringify({ name, email, subject, message }),
-    headers: {
-      'Content-Type': 'application/json'
-    }
-  });
-}`}
+            {realHeroCode1}
+
           </motion.pre>
         );
       }
-      
+
       setCodeSnippets(snippets);
     };
-    
+
     generateCodeSnippets();
   }, []);
 
@@ -81,7 +73,7 @@ const Contact: React.FC = () => {
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setIsSubmitting(true);
-    
+
     // Simulate form submission
     setTimeout(() => {
       setIsSubmitting(false);
@@ -92,7 +84,7 @@ const Contact: React.FC = () => {
         subject: '',
         message: '',
       });
-      
+
       // Reset submitted state after 5 seconds
       setTimeout(() => {
         setSubmitted(false);
@@ -106,24 +98,24 @@ const Contact: React.FC = () => {
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
         {codeSnippets}
       </div>
-      
+
       {/* Animated background elements */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
-        <div 
+        <div
           className="floating-blob absolute top-1/4 -left-20 w-80 h-80 bg-purple-300 dark:bg-purple-900 rounded-full mix-blend-multiply filter blur-3xl opacity-40 animate-float reveal-on-theme-change"
           data-speed="0.05"
         ></div>
-        <div 
-          className="floating-blob absolute top-3/4 -right-20 w-96 h-96 bg-blue-300 dark:bg-blue-900 rounded-full mix-blend-multiply filter blur-3xl opacity-40 animate-float reveal-on-theme-change" 
+        <div
+          className="floating-blob absolute top-3/4 -right-20 w-96 h-96 bg-blue-300 dark:bg-blue-900 rounded-full mix-blend-multiply filter blur-3xl opacity-40 animate-float reveal-on-theme-change"
           style={{ animationDelay: '2s' }}
           data-speed="0.08"
         ></div>
-        <div 
-          className="floating-blob absolute top-1/2 left-1/3 w-64 h-64 bg-pink-300 dark:bg-pink-900 rounded-full mix-blend-multiply filter blur-3xl opacity-40 animate-float reveal-on-theme-change" 
+        <div
+          className="floating-blob absolute top-1/2 left-1/3 w-64 h-64 bg-pink-300 dark:bg-pink-900 rounded-full mix-blend-multiply filter blur-3xl opacity-40 animate-float reveal-on-theme-change"
           style={{ animationDelay: '4s' }}
           data-speed="0.06"
         ></div>
-        
+
         {/* Animated particles */}
         <div className="absolute inset-0 opacity-30">
           {[...Array(15)].map((_, index) => (
@@ -140,7 +132,7 @@ const Contact: React.FC = () => {
           ))}
         </div>
       </div>
-      
+
       <div className="container mx-auto px-4 relative z-10">
         <AnimatedSection className="mb-16 text-center">
           <h2 className="section-heading text-gray-800 dark:text-white hover:text-blue-600 dark:hover:text-blue-400 transition-colors duration-300 relative inline-block group">
@@ -158,7 +150,7 @@ const Contact: React.FC = () => {
               <h3 className="text-xl md:text-2xl font-bold text-gray-800 dark:text-white mb-6 hover:text-blue-600 dark:hover:text-blue-400 transition-colors duration-300">
                 Contact Information
               </h3>
-              
+
               <div className="space-y-4 md:space-y-6">
                 <div className="flex items-start group hover:bg-blue-50 dark:hover:bg-blue-900/10 p-3 rounded-lg transition-all duration-300">
                   <div className="shrink-0 bg-blue-100 dark:bg-blue-900/30 p-3 rounded-full text-blue-600 dark:text-blue-400 mr-4 group-hover:bg-blue-200 dark:group-hover:bg-blue-800/30 transition-colors duration-300 group-hover:scale-110 transform">
@@ -169,15 +161,15 @@ const Contact: React.FC = () => {
                     <p className="text-sm md:text-base text-gray-600 dark:text-gray-300 group-hover:text-gray-800 dark:group-hover:text-gray-200 transition-colors duration-300">{userData.footer.contact.location}</p>
                   </div>
                 </div>
-                
+
                 <div className="flex items-start group hover:bg-blue-50 dark:hover:bg-blue-900/10 p-3 rounded-lg transition-all duration-300">
                   <div className="shrink-0 bg-blue-100 dark:bg-blue-900/30 p-3 rounded-full text-blue-600 dark:text-blue-400 mr-4 group-hover:bg-blue-200 dark:group-hover:bg-blue-800/30 transition-colors duration-300 group-hover:scale-110 transform">
                     <FiMail size={18} className="group-hover:animate-bounce" />
                   </div>
                   <div>
                     <h4 className="text-base md:text-lg font-medium text-gray-800 dark:text-white mb-1 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors duration-300">Email</h4>
-                    <a 
-                      href={`mailto:${userData.footer.contact.email}`} 
+                    <a
+                      href={`mailto:${userData.footer.contact.email}`}
                       className="text-sm md:text-base text-blue-600 dark:text-blue-400 hover:underline transition-all duration-300 relative group-hover:font-medium"
                     >
                       <span className="relative">
@@ -187,7 +179,7 @@ const Contact: React.FC = () => {
                     </a>
                   </div>
                 </div>
-                
+
                 <div className="flex items-start group hover:bg-blue-50 dark:hover:bg-blue-900/10 p-3 rounded-lg transition-all duration-300">
                   <div className="shrink-0 bg-blue-100 dark:bg-blue-900/30 p-3 rounded-full text-blue-600 dark:text-blue-400 mr-4 group-hover:bg-blue-200 dark:group-hover:bg-blue-800/30 transition-colors duration-300 group-hover:scale-110 transform">
                     <FiPhone size={18} className="group-hover:animate-bounce" />
@@ -198,15 +190,15 @@ const Contact: React.FC = () => {
                   </div>
                 </div>
               </div>
-              
+
               <div className="mt-8 md:mt-12">
                 <h4 className="text-base md:text-lg font-medium text-gray-800 dark:text-white mb-4 hover:text-blue-600 dark:hover:text-blue-400 transition-colors duration-300">Follow Me</h4>
                 <div className="flex space-x-4">
                   {/* Social links - could be replaced with actual icons */}
                   {userData.footer.socialLinks.slice(0, 3).map((link, index) => (
-                    <a 
+                    <a
                       key={index}
-                      href={link.href} 
+                      href={link.href}
                       className="w-10 h-10 bg-gray-200 dark:bg-gray-700 rounded-full flex items-center justify-center text-gray-600 dark:text-gray-300 hover:bg-blue-500 hover:text-white dark:hover:bg-blue-600 transition-all duration-300 transform hover:scale-110 hover:rotate-6 hover:shadow-lg"
                       aria-label={`Social link ${index + 1}`}
                     >
@@ -223,7 +215,7 @@ const Contact: React.FC = () => {
               <h3 className="text-xl md:text-2xl font-bold text-gray-800 dark:text-white mb-6 hover:text-blue-600 dark:hover:text-blue-400 transition-colors duration-300">
                 Send Me a Message
               </h3>
-              
+
               {submitted ? (
                 <div className="bg-green-100 dark:bg-green-900/30 p-6 rounded-lg text-center animate-fade-in">
                   <div className="text-green-600 dark:text-green-400 mb-2 text-xl">
@@ -264,7 +256,7 @@ const Contact: React.FC = () => {
                       />
                     </div>
                   </div>
-                  
+
                   <div className="group">
                     <label htmlFor="subject" className="block text-sm text-gray-600 dark:text-gray-400 mb-1 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors duration-300">Subject</label>
                     <input
@@ -278,7 +270,7 @@ const Contact: React.FC = () => {
                       placeholder="How can I help you?"
                     />
                   </div>
-                  
+
                   <div className="group">
                     <label htmlFor="message" className="block text-sm text-gray-600 dark:text-gray-400 mb-1 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors duration-300">Message</label>
                     <textarea
@@ -292,7 +284,7 @@ const Contact: React.FC = () => {
                       placeholder="Your message..."
                     ></textarea>
                   </div>
-                  
+
                   <button
                     type="submit"
                     disabled={isSubmitting}
@@ -302,19 +294,19 @@ const Contact: React.FC = () => {
                   >
                     <span className="absolute inset-0 w-full h-full bg-gradient-to-r from-blue-600 to-blue-600 group-hover:from-blue-600 group-hover:via-purple-600 group-hover:to-blue-600 transition-all duration-1000 ease-in-out bg-size-200 bg-pos-0 group-hover:bg-pos-100"></span>
                     <span className="relative z-10 flex items-center">
-                    {isSubmitting ? (
-                      <>
-                        <svg className="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                          <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                          <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                        </svg>
-                        Sending...
-                      </>
-                    ) : (
-                      <>
+                      {isSubmitting ? (
+                        <>
+                          <svg className="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                            <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                            <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                          </svg>
+                          Sending...
+                        </>
+                      ) : (
+                        <>
                           Send Message <FiSend className="ml-2 group-hover:translate-x-1 transition-transform duration-300" />
-                      </>
-                    )}
+                        </>
+                      )}
                     </span>
                   </button>
                 </form>

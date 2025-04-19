@@ -15,6 +15,9 @@ export interface GooeyNavProps {
   timeVariance?: number;
   colors?: number[];
   initialActiveIndex?: number;
+  minDistance?:any;
+  maxDistance?:any;
+  maxRotate?:any
 }
 
 const GooeyNav: React.FC<GooeyNavProps> = ({

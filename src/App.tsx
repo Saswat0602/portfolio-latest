@@ -85,6 +85,7 @@ const App: React.FC = () => {
     splashCursor: loadingStage >= PRIORITY.LOW
   };
 
+
   return (
     <ThemeProvider>
       <div className="relative min-h-screen bg-gray-50 dark:bg-slate-900 transition-colors dark-transition">

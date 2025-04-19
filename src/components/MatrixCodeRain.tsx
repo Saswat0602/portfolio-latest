@@ -53,7 +53,7 @@ const MatrixCodeRain: React.FC<MatrixRainProps> = ({
         // Random duration for varied speeds
         const duration = (5 + Math.random() * 5) / speed;
         // Random x position
-        const xPos = (i * actualDensity) + Math.random() * 20;
+        const xPos = (i * actualDensity) + Math.random() * 60;
         
         const column = (
           <div 
@@ -72,7 +72,7 @@ const MatrixCodeRain: React.FC<MatrixRainProps> = ({
             }}
           >
             {/* Reduce character count per column */}
-            {Array.from({ length: Math.min(8 + Math.floor(Math.random() * 12), 15) }, (_, j) => {
+            {Array.from({ length: Math.min(8 + Math.floor(Math.random() * 12), 25) }, (_, j) => {
               // Get random character for each position
               const char = chars[Math.floor(Math.random() * chars.length)];
               // Lighter color for first character (head of the rain)
@@ -82,7 +82,7 @@ const MatrixCodeRain: React.FC<MatrixRainProps> = ({
                 <div 
                   key={j}
                   style={{ 
-                    opacity: isHead ? 1 : 0.5 - (j * 0.03),
+                    opacity: isHead ? 1 : 0.8 - (j * 0.03),
                     color: isHead ? '#ffffff' : undefined,
                     textShadow: isHead ? '0 0 8px #60a5fa, 0 0 12px #60a5fa' : undefined
                   }}

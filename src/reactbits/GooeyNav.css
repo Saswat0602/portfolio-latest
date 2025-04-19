@@ -3,8 +3,10 @@
 }
 
 .gooey-nav-container {
-    position: relative;
-}
+    position: sticky;
+    z-index: 9999999;
+  }
+  
 
 .gooey-nav-container nav {
     display: flex;
