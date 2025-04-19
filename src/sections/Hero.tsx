@@ -1,43 +1,25 @@
-import React, { useRef, useEffect, useState, lazy, Suspense } from 'react';
+import React, { useRef, useEffect, useState, lazy, Suspense, useMemo } from 'react';
 import { FiGithub, FiLinkedin, FiMail } from 'react-icons/fi';
 import AnimatedSection from '../components/AnimatedSection';
 import TextAnimation from '../components/TextAnimation';
 import { useTheme } from '../hooks/useTheme';
 import LaptopAnimation from '../components/LaptopAnimation';
-// Lazy load heavy components
 const MatrixCodeRain = lazy(() => import('../components/MatrixCodeRain'));
 import userData from '../data/userData';
 import { realHeroCode1, realHeroCode2 } from '../data/realHeroCode';
 import RealCodeSnippet from '../widget/RealCodeSnippet';
+import { useClientSideEffects, useMouseParallax } from '../hooks/useHeroHooks';
 
 
-
-const Hero: React.FC = () => {
-  const { theme } = useTheme();
-  const containerRef = useRef<HTMLDivElement>(null);
-  const mouseRef = useRef<{ x: number; y: number }>({ x: 0, y: 0 });
+const useCodeSnippets = (isClientSide: boolean) => {
   const [codeSnippets, setCodeSnippets] = useState<React.ReactNode[]>([]);
-  const [showMatrixRain, setShowMatrixRain] = useState(false);
-  const [isClientSide, setIsClientSide] = useState(false);
-  
-  // Set client-side rendering flag
-  useEffect(() => {
-    setIsClientSide(true);
-    
-    // Delay loading matrix rain for better performance
-    const timer = setTimeout(() => {
-      setShowMatrixRain(true);
-    }, 2500);
-    
-    return () => clearTimeout(timer);
-  }, []);
-  
+
   useEffect(() => {
     if (!isClientSide) return;
     
-    const snippets = [];
-    const snippetsPerRow = 5; 
-    const rowCount = 2;        
+    const snippets: React.ReactNode[] = [];
+    const snippetsPerRow = 4;
+    const rowCount = 2;      
     const codes = [realHeroCode1, realHeroCode2];
     
     for (let row = 0; row < rowCount; row++) {
@@ -49,7 +31,7 @@ const Hero: React.FC = () => {
         const top = baseTop + (Math.random() * 10 - 5); 
         const left = baseLeft + (Math.random() * 10 - 5); 
         const opacity = 0.2 + Math.random() * 0.15;
-        const width = 150 + Math.random() * 400;
+        const width = 150 + Math.random() * 300;
         const fontSize = 8 + Math.random() * 2;
         const code = codes[(row * snippetsPerRow + i) % codes.length];
         
@@ -69,45 +51,44 @@ const Hero: React.FC = () => {
     
     setCodeSnippets(snippets);
   }, [isClientSide]);
+
+  return codeSnippets;
+};
+
+const useParticles = (isClientSide: boolean, theme: string, count: number = 8) => {
+  return useMemo(() => {
+    if (!isClientSide) return null;
+    
+    return (
+      <div className="absolute inset-0 opacity-30">
+        {[...Array(count)].map((_, index) => (
+          <div
+            key={index}
+            className={`absolute w-1 h-1 rounded-full ${
+              theme === 'dark' ? 'bg-white' : 'bg-blue-600'
+            } reveal-on-theme-change`}
+            style={{
+              top: `${Math.random() * 100}%`,
+              left: `${Math.random() * 100}%`,
+              animation: `floatParticle ${3 + Math.random() * 5}s infinite ease-in-out`,
+              animationDelay: `${Math.random() * 5}s`,
+            }}
+          />
+        ))}
+      </div>
+    );
+  }, [isClientSide, theme, count]);
+};
+
+const Hero: React.FC = () => {
+  const { theme } = useTheme();
+  const containerRef = useRef<HTMLDivElement>(null);
+  const { isClientSide, showMatrixRain } = useClientSideEffects();
+  const codeSnippets = useCodeSnippets(isClientSide);
+  const particles = useParticles(isClientSide, theme);
   
-  useEffect(() => {
-    if (!isClientSide) return;
-    
-    // Throttle mouse move events for better performance
-    let isThrottled = false;
-    
-    const handleMouseMove = (e: MouseEvent) => {
-      if (isThrottled) return;
-      isThrottled = true;
-      
-      setTimeout(() => {
-        isThrottled = false;
-        
-        if (containerRef.current) {
-          mouseRef.current = {
-            x: e.clientX / window.innerWidth,
-            y: e.clientY / window.innerHeight,
-          };
-          
-          const elements = containerRef.current.querySelectorAll('.floating-blob');
-          elements.forEach((el) => {
-            const element = el as HTMLElement;
-            const speed = parseFloat(element.getAttribute('data-speed') || '0.05');
-            const offsetX = (mouseRef.current.x - 0.5) * speed * 100;
-            const offsetY = (mouseRef.current.y - 0.5) * speed * 100;
-            
-            element.style.transform = `translate(${offsetX}px, ${offsetY}px)`;
-          });
-        }
-      }, 16); // Approximately 60fps
-    };
-    
-    window.addEventListener('mousemove', handleMouseMove, { passive: true });
-    return () => {
-      window.removeEventListener('mousemove', handleMouseMove);
-    };
-  }, [isClientSide]);
-  
+  // Setup mouse parallax effect
+  useMouseParallax(isClientSide, containerRef);
   
   const scrollToProjects = () => {
     const projectsSection = document.getElementById('projects');
@@ -115,6 +96,54 @@ const Hero: React.FC = () => {
       projectsSection.scrollIntoView({ behavior: 'smooth' });
     }
   };
+
+  // Memoize static elements
+  const socialLinks = useMemo(() => (
+    <div className="flex gap-6 mt-8 justify-center md:justify-start reveal-on-theme-change">
+      <a 
+        href={userData.footer.socialLinks[0].href} 
+        target="_blank" 
+        rel="noopener noreferrer"
+        className="text-gray-600 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-400 text-2xl transition-colors"
+        aria-label="GitHub"
+      >
+        <FiGithub />
+      </a>
+      <a 
+        href={userData.footer.socialLinks[1].href} 
+        target="_blank" 
+        rel="noopener noreferrer"
+        className="text-gray-600 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-400 text-2xl transition-colors"
+        aria-label="LinkedIn"
+      >
+        <FiLinkedin />
+      </a>
+      <a 
+        href={`mailto:${userData.about.email}`}
+        className="text-gray-600 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-400 text-2xl transition-colors"
+        aria-label="Email"
+      >
+        <FiMail />
+      </a>
+    </div>
+  ), []);
+
+  const heroButtons = useMemo(() => (
+    <div className="flex gap-4 flex-wrap justify-center md:justify-start">
+      <a 
+        href="#contact" 
+        className="inline-block px-6 py-3 text-white bg-blue-600 rounded-lg shadow-lg hover:bg-blue-700 transition-all hover:scale-105 transform-gpu active:scale-95 reveal-on-theme-change"
+      >
+        Get in Touch
+      </a>
+      <button
+        onClick={scrollToProjects}
+        className="inline-block px-6 py-3 bg-white dark:bg-gray-800 text-blue-600 dark:text-blue-400 border border-blue-600 dark:border-blue-400 rounded-lg shadow-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-all hover:scale-105 transform-gpu active:scale-95 reveal-on-theme-change"
+      >
+        View My Work
+      </button>
+    </div>
+  ), []);
 
   return (
     <section 
@@ -146,31 +175,7 @@ const Hero: React.FC = () => {
           style={{ animationDelay: '2s' }}
           data-speed="0.08"
         ></div>
-        <div 
-          className="floating-blob absolute top-1/2 left-1/3 w-64 h-64 bg-pink-300 dark:bg-pink-900 rounded-full mix-blend-multiply filter blur-3xl opacity-40 animate-float reveal-on-theme-change" 
-          style={{ animationDelay: '4s' }}
-          data-speed="0.06"
-        ></div>
-        
-        {/* Reduced animated particles */}
-        {isClientSide && (
-          <div className="absolute inset-0 opacity-30">
-            {[...Array(12)].map((_, index) => (
-              <div
-                key={index}
-                className={`absolute w-1 h-1 rounded-full ${
-                  theme === 'dark' ? 'bg-white' : 'bg-blue-600'
-                } reveal-on-theme-change`}
-                style={{
-                  top: `${Math.random() * 100}%`,
-                  left: `${Math.random() * 100}%`,
-                  animation: `floatParticle ${3 + Math.random() * 5}s infinite ease-in-out`,
-                  animationDelay: `${Math.random() * 5}s`,
-                }}
-              />
-            ))}
-          </div>
-        )}
+        {particles}
       </div>
 
       <div className="container mx-auto px-4 z-10">
@@ -198,50 +203,9 @@ const Hero: React.FC = () => {
                   delay={1.3}
                 />
               </h2>
-           
               
-              <div className="flex gap-4 flex-wrap justify-center md:justify-start">
-                <a 
-                  href="#contact" 
-                  className="inline-block px-6 py-3 text-white bg-blue-600 rounded-lg shadow-lg hover:bg-blue-700 transition-all hover:scale-105 transform-gpu active:scale-95 reveal-on-theme-change"
-                >
-                  Get in Touch
-                </a>
-                <button
-                  onClick={scrollToProjects}
-                  className="inline-block px-6 py-3 bg-white dark:bg-gray-800 text-blue-600 dark:text-blue-400 border border-blue-600 dark:border-blue-400 rounded-lg shadow-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-all hover:scale-105 transform-gpu active:scale-95 reveal-on-theme-change"
-                >
-                  View My Work
-                </button>
-              </div>
-              
-              <div className="flex gap-6 mt-8 justify-center md:justify-start reveal-on-theme-change">
-                <a 
-                  href={userData.footer.socialLinks[0].href} 
-                  target="_blank" 
-                  rel="noopener noreferrer"
-                  className="text-gray-600 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-400 text-2xl transition-colors"
-                  aria-label="GitHub"
-                >
-                  <FiGithub />
-                </a>
-                <a 
-                  href={userData.footer.socialLinks[1].href} 
-                  target="_blank" 
-                  rel="noopener noreferrer"
-                  className="text-gray-600 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-400 text-2xl transition-colors"
-                  aria-label="LinkedIn"
-                >
-                  <FiLinkedin />
-                </a>
-                <a 
-                  href={`mailto:${userData.about.email}`}
-                  className="text-gray-600 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-400 text-2xl transition-colors"
-                  aria-label="Email"
-                >
-                  <FiMail />
-                </a>
-              </div>
+              {heroButtons}
+              {socialLinks}
             </AnimatedSection>
           </div>
           
@@ -255,4 +219,4 @@ const Hero: React.FC = () => {
   );
 };
 
-export default Hero; 
+export default Hero;

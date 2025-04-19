@@ -106,6 +106,8 @@ const App: React.FC = () => {
         )}
 
         <main className="relative z-10">
+
+          
           <Suspense fallback={<div className="h-screen"></div>}>
             {shouldRender.hero && <Hero />}
           </Suspense>
