@@ -4,6 +4,7 @@ import { FiBriefcase, FiCalendar, FiMapPin, FiClock, FiChevronRight } from 'reac
 import userData from '../data/userData';
 import { motion } from 'framer-motion';
 import { realHeroCode1 } from '../data/realHeroCode';
+import BackgroundElements from '../widget/BackgroundElements';
 
 interface ExperienceItemProps {
   title: string;
@@ -45,11 +46,11 @@ const ExperienceItem: React.FC<ExperienceItemProps> = ({
         <div className="flex-1 p-6 bg-white dark:bg-slate-800 rounded-xl shadow-md hover:shadow-xl dark:shadow-blue-900/5 transform transition-all duration-500 hover:-translate-y-2 hover:shadow-blue-200 dark:hover:shadow-blue-900/20 relative group">
           {/* Subtle highlight on hover */}
           <div className="absolute inset-0 rounded-xl bg-gradient-to-r from-blue-500/0 to-purple-500/0 group-hover:from-blue-500/5 group-hover:to-purple-500/5 dark:group-hover:from-blue-500/10 dark:group-hover:to-purple-500/10 transition-opacity duration-500 opacity-0 group-hover:opacity-100"></div>
-          
+
           <div className="flex flex-col sm:flex-row sm:justify-between mb-4 relative z-10">
             <div>
               <h3 className="text-xl font-bold text-gray-800 dark:text-white group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors duration-300">
-                {title} 
+                {title}
                 <FiChevronRight className="hidden group-hover:inline-block ml-1 transition-transform duration-300 animate-pulse" />
               </h3>
               <h4 className="text-lg font-medium text-blue-600 dark:text-blue-400">{company}</h4>
@@ -71,11 +72,11 @@ const ExperienceItem: React.FC<ExperienceItemProps> = ({
           </div>
 
           <p className="mb-4 text-gray-600 dark:text-gray-300 group-hover:text-gray-800 dark:group-hover:text-white transition-colors duration-300 relative z-10">{description}</p>
-          
+
           <div className="flex flex-wrap gap-2 relative z-10">
             {skills.map((skill, index) => (
-              <span 
-                key={index} 
+              <span
+                key={index}
                 className="inline-block px-3 py-1 text-xs bg-blue-100 dark:bg-blue-900/30 text-blue-800 dark:text-blue-300 rounded-full
                 transition-all duration-300 hover:bg-blue-200 dark:hover:bg-blue-800 hover:transform hover:scale-105 hover:shadow-sm"
               >
@@ -97,19 +98,19 @@ const Experience: React.FC = () => {
     const generateCodeSnippets = () => {
       const snippets = [];
       const snippetCount = 6;
-      
+
       for (let i = 0; i < snippetCount; i++) {
         const top = 5 + Math.random() * 80;
         const left = 5 + Math.random() * 90;
         const opacity = 0.1 + Math.random() * 0.1;
         const width = 150 + Math.random() * 200;
         const fontSize = 8 + Math.random() * 2;
-        
+
         snippets.push(
-          <motion.pre 
+          <motion.pre
             key={i}
             className="absolute font-mono opacity-0 text-blue-600/40 dark:text-blue-400/50 pointer-events-none overflow-hidden"
-            style={{ 
+            style={{
               top: `${top}%`,
               left: `${left}%`,
               width: `${width}px`,
@@ -117,9 +118,9 @@ const Experience: React.FC = () => {
               maxHeight: '300px',
               fontSize: `${fontSize}px`
             }}
-            animate={{ 
+            animate={{
               opacity: [0, opacity],
-              y: [10, 0] 
+              y: [10, 0]
             }}
             transition={{
               duration: 1,
@@ -131,10 +132,10 @@ const Experience: React.FC = () => {
           </motion.pre>
         );
       }
-      
+
       setCodeSnippets(snippets);
     };
-    
+
     generateCodeSnippets();
   }, []);
 
@@ -144,40 +145,8 @@ const Experience: React.FC = () => {
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
         {codeSnippets}
       </div>
-      
-      {/* Animated background elements */}
-      <div className="absolute inset-0 overflow-hidden pointer-events-none">
-        <div 
-          className="floating-blob absolute top-1/4 -left-20 w-80 h-80 bg-purple-300 dark:bg-purple-900 rounded-full mix-blend-multiply filter blur-3xl opacity-40 animate-float reveal-on-theme-change"
-          data-speed="0.05"
-        ></div>
-        <div 
-          className="floating-blob absolute top-3/4 -right-20 w-96 h-96 bg-blue-300 dark:bg-blue-900 rounded-full mix-blend-multiply filter blur-3xl opacity-40 animate-float reveal-on-theme-change" 
-          style={{ animationDelay: '2s' }}
-          data-speed="0.08"
-        ></div>
-        <div 
-          className="floating-blob absolute top-1/2 left-1/3 w-64 h-64 bg-pink-300 dark:bg-pink-900 rounded-full mix-blend-multiply filter blur-3xl opacity-40 animate-float reveal-on-theme-change" 
-          style={{ animationDelay: '4s' }}
-          data-speed="0.06"
-        ></div>
-        
-        {/* Animated particles */}
-        <div className="absolute inset-0 opacity-30">
-          {[...Array(15)].map((_, index) => (
-            <div
-              key={index}
-              className="absolute w-1 h-1 rounded-full bg-blue-600 dark:bg-white reveal-on-theme-change"
-              style={{
-                top: `${Math.random() * 100}%`,
-                left: `${Math.random() * 100}%`,
-                animation: `floatParticle ${3 + Math.random() * 5}s infinite ease-in-out`,
-                animationDelay: `${Math.random() * 5}s`,
-              }}
-            />
-          ))}
-        </div>
-      </div>
+
+      <BackgroundElements />
 
       <div className="container mx-auto px-4 relative z-10">
         <AnimatedSection className="mb-16 text-center">
@@ -189,7 +158,7 @@ const Experience: React.FC = () => {
 
         <div className="max-w-3xl mx-auto space-y-12">
           {userData.experience.map((exp, index) => (
-            <ExperienceItem 
+            <ExperienceItem
               key={index}
               {...exp}
               isLast={index === userData.experience.length - 1}
