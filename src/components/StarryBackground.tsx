@@ -1,4 +1,4 @@
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useState, memo } from 'react';
 import { useTheme } from '../hooks/useTheme';
 
 interface Star {
@@ -13,12 +13,14 @@ const StarryBackground = () => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const { theme } = useTheme();
   const isDark = theme === 'dark';
+  const [isVisible, setIsVisible] = useState(true);
+  const requestRef = useRef<number | null>(null);
 
   useEffect(() => {
     const canvas = canvasRef.current;
     if (!canvas) return;
 
-    const ctx = canvas.getContext('2d');
+    const ctx = canvas.getContext('2d', { alpha: true, desynchronized: true });
     if (!ctx) return;
 
     // Set canvas size to match window
@@ -28,33 +30,67 @@ const StarryBackground = () => {
     };
 
     setCanvasSize();
-    window.addEventListener('resize', setCanvasSize);
+
+    // Debounce resize for better performance
+    let resizeTimeout: number;
+    const handleResize = () => {
+      clearTimeout(resizeTimeout);
+      resizeTimeout = window.setTimeout(() => {
+        setCanvasSize();
+        generateStars();
+      }, 200);
+    };
+
+    window.addEventListener('resize', handleResize);
 
     // Create stars
     const stars: Star[] = [];
-    const starCount = Math.min(
-      Math.floor((window.innerWidth * window.innerHeight) / 1000),
-      300 // Max stars
-    );
+    
+    const generateStars = () => {
+      stars.length = 0; // Clear existing stars
+      // Reduce star count for better performance
+      const starCount = Math.min(
+        Math.floor((window.innerWidth * window.innerHeight) / 3000),
+        150 // Max stars - reduced from 300
+      );
 
-    for (let i = 0; i < starCount; i++) {
-      stars.push({
-        x: Math.random() * canvas.width,
-        y: Math.random() * canvas.height,
-        size: Math.random() * 1.5 + 0.5,
-        opacity: Math.random() * 0.8 + 0.2,
-        twinkleSpeed: Math.random() * 0.01 + 0.005,
-      });
-    }
+      for (let i = 0; i < starCount; i++) {
+        stars.push({
+          x: Math.random() * canvas.width,
+          y: Math.random() * canvas.height,
+          size: Math.random() * 1.5 + 0.5,
+          opacity: Math.random() * 0.8 + 0.2,
+          twinkleSpeed: Math.random() * 0.01 + 0.005,
+        });
+      }
+    };
 
-    let animationFrameId: number;
+    generateStars();
+    
     let time = 0;
+
+    // Use IntersectionObserver to only animate when visible
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach(entry => {
+          setIsVisible(entry.isIntersecting);
+        });
+      },
+      { threshold: 0.1 }
+    );
+    
+    observer.observe(canvas);
 
     // Animation loop
     const animate = () => {
+      if (!isVisible) {
+        requestRef.current = requestAnimationFrame(animate);
+        return;
+      }
+      
       ctx.clearRect(0, 0, canvas.width, canvas.height);
       
-      time += 0.01;
+      time += 0.005; // Reduced animation speed for better performance
       
       stars.forEach((star) => {
         // Calculate twinkling effect
@@ -74,16 +110,20 @@ const StarryBackground = () => {
         ctx.fill();
       });
       
-      animationFrameId = requestAnimationFrame(animate);
+      requestRef.current = requestAnimationFrame(animate);
     };
 
     animate();
 
     return () => {
-      window.removeEventListener('resize', setCanvasSize);
-      cancelAnimationFrame(animationFrameId);
+      window.removeEventListener('resize', handleResize);
+      clearTimeout(resizeTimeout);
+      observer.disconnect();
+      if (requestRef.current) {
+        cancelAnimationFrame(requestRef.current);
+      }
     };
-  }, [isDark]);
+  }, [isDark, isVisible]);
 
   return (
     <canvas 
@@ -93,4 +133,4 @@ const StarryBackground = () => {
   );
 };
 
-export default StarryBackground; 
+export default memo(StarryBackground); 

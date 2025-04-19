@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useRef, useState, memo } from 'react';
 import { useTheme } from '../hooks/useTheme';
 
 const LaptopAnimation: React.FC = () => {
@@ -6,13 +6,12 @@ const LaptopAnimation: React.FC = () => {
   const containerRef = useRef<HTMLDivElement>(null);
   const codeElementsRef = useRef<HTMLDivElement>(null);
   const [isInView, setIsInView] = useState(false);
+  const requestRef = useRef<number | null>(null);
   
-  // Array of tech words that will float around the laptop
+  // Reduced array of tech words for better performance
   const techWords = [
     'React', 'TypeScript', 'Node.js', 'JavaScript',
-    'HTML5', 'CSS3', 'Tailwind', 'Next.js',
-    'Redux', 'GraphQL', 'MongoDB', 'Express',
-    'Git', 'WebGL', 'Three.js', 'Docker'
+    'HTML5', 'CSS3', 'Tailwind', 'Next.js'
   ];
   
   // Track if laptop is in viewport for animations
@@ -36,15 +35,23 @@ const LaptopAnimation: React.FC = () => {
   // Handle laptop rotation based on mouse movement
   useEffect(() => {
     const container = containerRef.current;
-    if (!container) return;
+    if (!container || !isInView) return;
     
     let rotationX = 0;
     let rotationY = 0;
-    const maxRotation = 10; // max degrees to rotate
+    const maxRotation = 5; // Reduced max degrees to rotate
+    let lastUpdateTime = 0;
     
     const handleMouseMove = (e: MouseEvent) => {
       // Don't animate during theme transition
       if (isTransitioning) return;
+      
+      const now = performance.now();
+      // Throttle mouse move updates to 30fps for better performance
+      if (now - lastUpdateTime < 33) {
+        return;
+      }
+      lastUpdateTime = now;
       
       // Calculate mouse position relative to the center of the container
       const rect = container.getBoundingClientRect();
@@ -62,28 +69,33 @@ const LaptopAnimation: React.FC = () => {
       }
       
       // Move code elements in opposite direction slightly for parallax effect
+      // Only update if in view
       const codeElements = codeElementsRef.current;
       if (codeElements) {
         const codeBlocks = codeElements.querySelectorAll('.code-block');
         codeBlocks.forEach((block, index) => {
           const el = block as HTMLElement;
-          const factor = 1 + (index % 3) * 0.2; // different movement factors for variety
-          const xOffset = -rotationY * factor * 0.5;
-          const yOffset = -rotationX * factor * 0.5;
+          const factor = 1 + (index % 3) * 0.1; // Reduced movement factors
+          const xOffset = -rotationY * factor * 0.3; // Reduced movement multiplier
+          const yOffset = -rotationX * factor * 0.3;
           el.style.transform = `translate(${xOffset}px, ${yOffset}px)`;
         });
       }
     };
     
-    document.addEventListener('mousemove', handleMouseMove);
+    // Reduced event handler with passive option for better performance
+    if (isInView) {
+      document.addEventListener('mousemove', handleMouseMove, { passive: true });
+    }
     
     return () => {
       document.removeEventListener('mousemove', handleMouseMove);
     };
-  }, [isTransitioning]);
+  }, [isTransitioning, isInView]);
   
   // Create glowing tech words that animate around the laptop
   const renderTechWords = () => {
+    // Reduce number of rendered words
     return techWords.map((word, index) => {
       const delay = index * 0.5;
       const duration = 15 + Math.random() * 20;
@@ -102,8 +114,8 @@ const LaptopAnimation: React.FC = () => {
             left: `${Math.random() * 100}%`,
             top: `${Math.random() * 100}%`,
             textShadow: theme === 'dark' 
-              ? '0 0 5px rgba(96, 165, 250, 0.7), 0 0 10px rgba(96, 165, 250, 0.5)' 
-              : '0 0 5px rgba(37, 99, 235, 0.7), 0 0 10px rgba(37, 99, 235, 0.5)',
+              ? '0 0 5px rgba(96, 165, 250, 0.7)' 
+              : '0 0 5px rgba(37, 99, 235, 0.7)',
           }}
         >
           {word}
@@ -118,42 +130,45 @@ const LaptopAnimation: React.FC = () => {
       className={`relative w-full max-w-md h-80 mx-auto perspective-1000 mt-8 mb-10 transition-opacity duration-500
                  ${isInView ? 'opacity-100' : 'opacity-0'}`}
     >
-      {/* Floating code elements */}
-      <div 
-        ref={codeElementsRef}
-        className="absolute inset-0 overflow-hidden pointer-events-none"
-      >
-        {/* Code block elements that float around */}
-        {[...Array(8)].map((_, i) => (
-          <div
-            key={i}
-            className={`code-block absolute rounded-md p-2 text-xs font-mono
-                      ${theme === 'dark' ? 'bg-slate-800/40' : 'bg-gray-100/70'} 
-                      backdrop-blur-sm shadow-lg border-l-2
-                      ${theme === 'dark' ? 'border-blue-500' : 'border-blue-600'}
-                      transition-colors duration-300`}
-            style={{
-              left: `${15 + Math.random() * 70}%`,
-              top: `${15 + Math.random() * 70}%`,
-              width: `${80 + Math.random() * 100}px`,
-              height: `${30 + Math.random() * 30}px`,
-              transform: 'translateZ(0px)',
-              zIndex: i % 2 === 0 ? -1 : 10,
-              opacity: 0.7 + Math.random() * 0.3,
-              transitionDelay: `${i * 50}ms`,
-            }}
-          >
-            <div className={`${theme === 'dark' ? 'text-blue-400' : 'text-blue-600'} transition-colors duration-300`}>
-              {'{'}
-              <span className={`${theme === 'dark' ? 'text-green-400' : 'text-green-600'} transition-colors duration-300`}>code</span>
-              {'}'}
+      {/* Floating code elements - only render when in view */}
+      {isInView && (
+        <div 
+          ref={codeElementsRef}
+          className="absolute inset-0 overflow-hidden pointer-events-none"
+        >
+          {/* Reduced number of code blocks */}
+          {[...Array(4)].map((_, i) => (
+            <div
+              key={i}
+              className={`code-block absolute rounded-md p-2 text-xs font-mono
+                        ${theme === 'dark' ? 'bg-slate-800/40' : 'bg-gray-100/70'} 
+                        backdrop-blur-sm shadow-lg border-l-2
+                        ${theme === 'dark' ? 'border-blue-500' : 'border-blue-600'}
+                        transition-colors duration-300`}
+              style={{
+                left: `${15 + Math.random() * 70}%`,
+                top: `${15 + Math.random() * 70}%`,
+                width: `${80 + Math.random() * 100}px`,
+                height: `${30 + Math.random() * 30}px`,
+                transform: 'translateZ(0px)',
+                zIndex: i % 2 === 0 ? -1 : 10,
+                opacity: 0.7 + Math.random() * 0.3,
+                transitionDelay: `${i * 50}ms`,
+                willChange: 'transform',
+              }}
+            >
+              <div className={`${theme === 'dark' ? 'text-blue-400' : 'text-blue-600'} transition-colors duration-300`}>
+                {'{'}
+                <span className={`${theme === 'dark' ? 'text-green-400' : 'text-green-600'} transition-colors duration-300`}>code</span>
+                {'}'}
+              </div>
             </div>
-          </div>
-        ))}
-        
-        {/* Tech words that float around */}
-        {renderTechWords()}
-      </div>
+          ))}
+          
+          {/* Tech words that float around */}
+          {renderTechWords()}
+        </div>
+      )}
 
       {/* Laptop container with 3D effect */}
       <div className="laptop preserve-3d transition-all duration-300 ease-out" style={{ transformStyle: 'preserve-3d' }}>
@@ -215,13 +230,13 @@ const LaptopAnimation: React.FC = () => {
           <div className="w-8 h-1 rounded-full mx-auto my-1 bg-gray-600"></div>
         </div>
         
-        {/* Reflection/shadow */}
-        <div className={`absolute -bottom-12 left-0 w-full h-10 bg-gradient-to-t from-transparent 
-                        ${theme === 'dark' ? 'to-blue-500/10' : 'to-black/10'}
+        {/* Reduced shadow intensity */}
+        <div className={`absolute -bottom-8 left-0 w-full h-6 bg-gradient-to-t from-transparent 
+                        ${theme === 'dark' ? 'to-blue-500/5' : 'to-black/5'}
                         rounded-full blur-md transform scale-75 transition-colors duration-300`}></div>
       </div>
     </div>
   );
 };
 
-export default LaptopAnimation; 
+export default memo(LaptopAnimation); 

@@ -1,5 +1,5 @@
 "use client";
-import React, { useEffect, useRef } from "react";
+import React, { useEffect, useRef, useState } from "react";
 
 interface ColorRGB {
   r: number;
@@ -53,26 +53,41 @@ function pointerPrototype(): Pointer {
 }
 
 export default function SplashCursor({
-  SIM_RESOLUTION = 128,
-  DYE_RESOLUTION = 1440,
-  CAPTURE_RESOLUTION = 512,
-  DENSITY_DISSIPATION = 3.5,
-  VELOCITY_DISSIPATION = 2,
+  SIM_RESOLUTION = 96,
+  DYE_RESOLUTION = 720,
+  CAPTURE_RESOLUTION = 256,
+  DENSITY_DISSIPATION = 4,
+  VELOCITY_DISSIPATION = 3,
   PRESSURE = 0.1,
-  PRESSURE_ITERATIONS = 20,
-  CURL = 3,
+  PRESSURE_ITERATIONS = 18,
+  CURL = 2,
   SPLAT_RADIUS = 0.2,
-  SPLAT_FORCE = 6000,
-  SHADING = true,
+  SPLAT_FORCE = 4000,
+  SHADING = false,
   COLOR_UPDATE_SPEED = 10,
   BACK_COLOR = { r: 0.5, g: 0, b: 0 },
   TRANSPARENT = true
 }: SplashCursorProps) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
+  const [isVisible, setIsVisible] = useState(true);
+  const isInitializedRef = useRef(false);
+  const rafRef = useRef<number | null>(null);
 
   useEffect(() => {
     const canvas = canvasRef.current;
     if (!canvas) return; // Guard canvas early
+    
+    // Use IntersectionObserver to only render when visible
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach(entry => {
+          setIsVisible(entry.isIntersecting);
+        });
+      },
+      { threshold: 0.1 }
+    );
+    
+    observer.observe(canvas);
 
     // Pointer and config setup
     let pointers: Pointer[] = [pointerPrototype()];
@@ -96,6 +111,11 @@ export default function SplashCursor({
       BACK_COLOR,
       TRANSPARENT,
     };
+
+    // Skip initialization if not visible
+    if (!isVisible && !isInitializedRef.current) {
+      return;
+    }
 
     // Get WebGL context (WebGL1 or WebGL2)
     const { gl, ext } = getWebGLContext(canvas);
@@ -1521,6 +1541,17 @@ export default function SplashCursor({
       }
     });
     // ------------------------------------------------------------
+
+    // Mark as initialized
+    isInitializedRef.current = true;
+    
+    // When this component unmounts or visibility changes
+    return () => {
+      observer.disconnect();
+      if (rafRef.current) {
+        cancelAnimationFrame(rafRef.current);
+      }
+    };
   }, [
     SIM_RESOLUTION,
     DYE_RESOLUTION,
@@ -1536,11 +1567,23 @@ export default function SplashCursor({
     COLOR_UPDATE_SPEED,
     BACK_COLOR,
     TRANSPARENT,
+    isVisible
   ]);
 
+  // Use lower z-index and reduced opacity
   return (
-    <div className="fixed top-0 left-0 z-50 pointer-events-none w-full h-full">
-      <canvas ref={canvasRef} id="fluid" className="w-screen h-screen block"></canvas>
-    </div>
+    <canvas
+      ref={canvasRef}
+      style={{
+        position: "fixed",
+        left: 0,
+        top: 0,
+        width: "100%",
+        height: "100%",
+        pointerEvents: "none", 
+        zIndex: 5, // Lower z-index
+        opacity: 0.8, // Reduced opacity
+      }}
+    />
   );
 }

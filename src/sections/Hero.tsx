@@ -1,10 +1,11 @@
-import React, { useRef, useEffect, useState } from 'react';
+import React, { useRef, useEffect, useState, lazy, Suspense } from 'react';
 import { FiGithub, FiLinkedin, FiMail } from 'react-icons/fi';
 import AnimatedSection from '../components/AnimatedSection';
 import TextAnimation from '../components/TextAnimation';
 import { useTheme } from '../hooks/useTheme';
 import LaptopAnimation from '../components/LaptopAnimation';
-import MatrixCodeRain from '../components/MatrixCodeRain';
+// Lazy load heavy components
+const MatrixCodeRain = lazy(() => import('../components/MatrixCodeRain'));
 import userData from '../data/userData';
 import { motion } from 'framer-motion';
 
@@ -115,11 +116,27 @@ const Hero: React.FC = () => {
   const containerRef = useRef<HTMLDivElement>(null);
   const mouseRef = useRef<{ x: number; y: number }>({ x: 0, y: 0 });
   const [codeSnippets, setCodeSnippets] = useState<React.ReactNode[]>([]);
+  const [showMatrixRain, setShowMatrixRain] = useState(false);
+  const [isClientSide, setIsClientSide] = useState(false);
+  
+  // Set client-side rendering flag
+  useEffect(() => {
+    setIsClientSide(true);
+    
+    // Delay loading matrix rain for better performance
+    const timer = setTimeout(() => {
+      setShowMatrixRain(true);
+    }, 2500);
+    
+    return () => clearTimeout(timer);
+  }, []);
   
   useEffect(() => {
-    // Generate code snippets
+    if (!isClientSide) return;
+    
+    // Generate code snippets - reduce count for better performance
     const snippets = [];
-    const snippetCount = 10;
+    const snippetCount = 5; // Reduced from 10
     const codes = [realHeroCode1, realHeroCode2];
     
     for (let i = 0; i < snippetCount; i++) {
@@ -144,33 +161,45 @@ const Hero: React.FC = () => {
     }
     
     setCodeSnippets(snippets);
-  }, []);
+  }, [isClientSide]);
   
   useEffect(() => {
+    if (!isClientSide) return;
+    
+    // Throttle mouse move events for better performance
+    let isThrottled = false;
+    
     const handleMouseMove = (e: MouseEvent) => {
-      if (containerRef.current) {
-        mouseRef.current = {
-          x: e.clientX / window.innerWidth,
-          y: e.clientY / window.innerHeight,
-        };
+      if (isThrottled) return;
+      isThrottled = true;
+      
+      setTimeout(() => {
+        isThrottled = false;
         
-        const elements = containerRef.current.querySelectorAll('.floating-blob');
-        elements.forEach((el) => {
-          const element = el as HTMLElement;
-          const speed = parseFloat(element.getAttribute('data-speed') || '0.05');
-          const offsetX = (mouseRef.current.x - 0.5) * speed * 100;
-          const offsetY = (mouseRef.current.y - 0.5) * speed * 100;
+        if (containerRef.current) {
+          mouseRef.current = {
+            x: e.clientX / window.innerWidth,
+            y: e.clientY / window.innerHeight,
+          };
           
-          element.style.transform = `translate(${offsetX}px, ${offsetY}px)`;
-        });
-      }
+          const elements = containerRef.current.querySelectorAll('.floating-blob');
+          elements.forEach((el) => {
+            const element = el as HTMLElement;
+            const speed = parseFloat(element.getAttribute('data-speed') || '0.05');
+            const offsetX = (mouseRef.current.x - 0.5) * speed * 100;
+            const offsetY = (mouseRef.current.y - 0.5) * speed * 100;
+            
+            element.style.transform = `translate(${offsetX}px, ${offsetY}px)`;
+          });
+        }
+      }, 16); // Approximately 60fps
     };
     
-    window.addEventListener('mousemove', handleMouseMove);
+    window.addEventListener('mousemove', handleMouseMove, { passive: true });
     return () => {
       window.removeEventListener('mousemove', handleMouseMove);
     };
-  }, []);
+  }, [isClientSide]);
   
   // Generate random string for glitch effect
   const generateRandomString = (length: number) => {
@@ -195,12 +224,18 @@ const Hero: React.FC = () => {
       className="relative h-screen flex items-center justify-center overflow-hidden bg-gray-50 dark:bg-slate-900 dark:text-white reveal-on-theme-change"
     >
       {/* Code background */}
-      <div className="absolute inset-0 overflow-hidden pointer-events-none">
-        {codeSnippets}
-      </div>
+      {isClientSide && (
+        <div className="absolute inset-0 overflow-hidden pointer-events-none">
+          {codeSnippets}
+        </div>
+      )}
       
-      {/* Matrix Code Rain */}
-      {theme === 'dark' && <MatrixCodeRain speed={0.8} opacity={0.15} />}
+      {/* Matrix Code Rain - lazy loaded */}
+      {isClientSide && showMatrixRain && theme === 'dark' && (
+        <Suspense fallback={null}>
+          <MatrixCodeRain speed={0.8} opacity={0.15} />
+        </Suspense>
+      )}
       
       {/* Animated background elements */}
       <div className="absolute inset-0 overflow-hidden">
@@ -219,23 +254,25 @@ const Hero: React.FC = () => {
           data-speed="0.06"
         ></div>
         
-        {/* New animated particles */}
-        <div className="absolute inset-0 opacity-30">
-          {[...Array(25)].map((_, index) => (
-            <div
-              key={index}
-              className={`absolute w-1 h-1 rounded-full ${
-                theme === 'dark' ? 'bg-white' : 'bg-blue-600'
-              } reveal-on-theme-change`}
-              style={{
-                top: `${Math.random() * 100}%`,
-                left: `${Math.random() * 100}%`,
-                animation: `floatParticle ${3 + Math.random() * 5}s infinite ease-in-out`,
-                animationDelay: `${Math.random() * 5}s`,
-              }}
-            />
-          ))}
-        </div>
+        {/* Reduced animated particles */}
+        {isClientSide && (
+          <div className="absolute inset-0 opacity-30">
+            {[...Array(12)].map((_, index) => (
+              <div
+                key={index}
+                className={`absolute w-1 h-1 rounded-full ${
+                  theme === 'dark' ? 'bg-white' : 'bg-blue-600'
+                } reveal-on-theme-change`}
+                style={{
+                  top: `${Math.random() * 100}%`,
+                  left: `${Math.random() * 100}%`,
+                  animation: `floatParticle ${3 + Math.random() * 5}s infinite ease-in-out`,
+                  animationDelay: `${Math.random() * 5}s`,
+                }}
+              />
+            ))}
+          </div>
+        )}
       </div>
 
       <div className="container mx-auto px-4 z-10">
@@ -250,111 +287,72 @@ const Hero: React.FC = () => {
                     effect="pressure"
                   />
                 </span>
-                <span 
-                  className="relative inline-block text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-violet-600 dark:from-blue-400 dark:to-violet-400 glitch-effect reveal-on-theme-change" 
-                  data-text={userData.name}
-                >
-                  {userData.name}
-                </span>
+                <TextAnimation 
+                  text={userData.name}
+                  effect="pressure"
+                  delay={0.8}
+                />
               </h1>
-            </AnimatedSection>
-
-            <AnimatedSection delay={0.1} duration={0.8}>
-              <h2 className="text-lg sm:text-xl md:text-2xl text-gray-600 dark:text-gray-300 mb-4 sm:mb-6 reveal-on-theme-change">
+              <h2 className="text-xl sm:text-2xl md:text-3xl text-gray-700 dark:text-gray-300 mb-4 reveal-on-theme-change">
                 <TextAnimation 
                   text={userData.introduction}
                   effect="wave"
+                  delay={1.3}
                 />
               </h2>
-            </AnimatedSection>
-
-            <AnimatedSection delay={0.2} duration={0.8}>
-              <p className="text-sm sm:text-base text-gray-600 dark:text-gray-400 max-w-xl mb-6 sm:mb-8 reveal-on-theme-change">
-                <TextAnimation 
-                  text={window.innerWidth < 640 ? 
-                    userData.about.description : 
-                    `${userData.about.description} ${userData.about.description2}`}
-                  effect="typewriter"
-                  speed={15}
-                />
+              <p className="text-base sm:text-lg md:text-xl text-gray-600 dark:text-gray-400 max-w-xl mb-8 reveal-on-theme-change">
+                {userData.about.description} {userData.about.description2}
               </p>
-            </AnimatedSection>
-
-            <AnimatedSection delay={0.3} duration={0.8}>
-              <div className="flex flex-col xs:flex-row gap-3 sm:gap-4 mb-6 sm:mb-8 justify-center md:justify-start">
-                <button 
-                  onClick={scrollToProjects}
-                  className="px-6 sm:px-8 py-2.5 sm:py-3 bg-blue-600 hover:bg-blue-700 text-white text-sm sm:text-base font-medium rounded-full
-                              transition-all duration-300 transform hover:-translate-y-1 hover:shadow-lg 
-                              relative overflow-hidden group reveal-on-theme-change"
-                >
-                  <span className="relative z-10">View My Work</span>
-                  <span className="absolute top-0 left-0 w-full h-0 bg-blue-800 transition-all duration-300 
-                                 group-hover:h-full z-0"></span>
-                </button>
+              
+              <div className="flex gap-4 flex-wrap justify-center md:justify-start">
                 <a 
                   href="#contact" 
-                  className="px-6 sm:px-8 py-2.5 sm:py-3 border-2 border-blue-600 dark:border-blue-400 text-blue-600 dark:text-blue-400
-                           text-sm sm:text-base font-medium rounded-full hover:bg-blue-600 hover:text-white dark:hover:bg-blue-400 dark:hover:text-slate-900
-                             transition-all duration-300 transform hover:-translate-y-1 hover:shadow-lg
-                             relative overflow-hidden group reveal-on-theme-change"
+                  className="inline-block px-6 py-3 text-white bg-blue-600 rounded-lg shadow-lg hover:bg-blue-700 transition-all hover:scale-105 transform-gpu active:scale-95 reveal-on-theme-change"
                 >
-                  <span className="relative z-10">Contact Me</span>
-                  <span className="absolute top-0 left-0 w-0 h-full bg-blue-600 dark:bg-blue-400 transition-all duration-300 
-                                 group-hover:w-full z-0"></span>
+                  Get in Touch
                 </a>
+                <button
+                  onClick={scrollToProjects}
+                  className="inline-block px-6 py-3 bg-white dark:bg-gray-800 text-blue-600 dark:text-blue-400 border border-blue-600 dark:border-blue-400 rounded-lg shadow-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-all hover:scale-105 transform-gpu active:scale-95 reveal-on-theme-change"
+                >
+                  View My Work
+                </button>
               </div>
-            </AnimatedSection>
-
-            <AnimatedSection delay={0.4} duration={0.8}>
-              <div className="flex space-x-6 justify-center md:justify-start reveal-on-theme-change">
+              
+              <div className="flex gap-6 mt-8 justify-center md:justify-start reveal-on-theme-change">
                 <a 
                   href={userData.footer.socialLinks[0].href} 
                   target="_blank" 
                   rel="noopener noreferrer"
-                  className="text-gray-600 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-400 
-                            transition-all duration-300 transform hover:scale-125"
+                  className="text-gray-600 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-400 text-2xl transition-colors"
                   aria-label="GitHub"
                 >
-                  <FiGithub size={22} />
+                  <FiGithub />
                 </a>
                 <a 
                   href={userData.footer.socialLinks[1].href} 
                   target="_blank" 
                   rel="noopener noreferrer"
-                  className="text-gray-600 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-400 
-                            transition-all duration-300 transform hover:scale-125"
+                  className="text-gray-600 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-400 text-2xl transition-colors"
                   aria-label="LinkedIn"
                 >
-                  <FiLinkedin size={22} />
+                  <FiLinkedin />
                 </a>
                 <a 
-                  href={`mailto:${userData.about.email}`} 
-                  className="text-gray-600 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-400 
-                            transition-all duration-300 transform hover:scale-125"
+                  href={`mailto:${userData.about.email}`}
+                  className="text-gray-600 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-400 text-2xl transition-colors"
                   aria-label="Email"
                 >
-                  <FiMail size={22} />
+                  <FiMail />
                 </a>
               </div>
             </AnimatedSection>
           </div>
           
-          {/* Laptop Animation - Hidden on very small screens, smaller on mobile */}
-          <div className="flex-1 w-full max-w-[280px] sm:max-w-none reveal-on-theme-change">
-            <AnimatedSection direction="right" delay={0.5} duration={1.2}>
-              <LaptopAnimation />
-            </AnimatedSection>
+          {/* Right side - Laptop animation */}
+          <div className="flex-1 md:pl-8 flex justify-center">
+            <LaptopAnimation />
           </div>
-        </div>
-      </div>
-
-      {/* Scroll indicator */}
-      <div className="absolute bottom-6 sm:bottom-10 left-1/2 transform -translate-x-1/2 animate-bounce reveal-on-theme-change">
-        <div className="w-5 h-8 sm:w-6 sm:h-10 rounded-full border-2 border-gray-400 dark:border-gray-600 flex justify-center
-                      transition-all duration-300 hover:border-blue-500 dark:hover:border-blue-400">
-          <div className="w-1 h-2 sm:h-3 bg-gray-400 dark:bg-gray-600 rounded-full mt-2 animate-pulse
-                         transition-all duration-300 hover:bg-blue-500 dark:hover:bg-blue-400"></div>
         </div>
       </div>
     </section>

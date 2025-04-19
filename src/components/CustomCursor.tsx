@@ -1,4 +1,4 @@
-import { useEffect, useState, useRef } from 'react';
+import { useEffect, useState, useRef, memo } from 'react';
 import { useTheme } from '../hooks/useTheme';
 
 const CustomCursor = () => {
@@ -8,18 +8,36 @@ const CustomCursor = () => {
   const { theme } = useTheme();
   const positionRef = useRef({ x: 0, y: 0 });
   const requestRef = useRef<number | undefined>(undefined);
+  const lastUpdateTimeRef = useRef(0);
+  const [isEnabled, setIsEnabled] = useState(true);
   
-  // Smoother animation with RAF instead of state updates
+  // Check if device is touch-based
+  useEffect(() => {
+    const isTouchDevice = 'ontouchstart' in window || navigator.maxTouchPoints > 0;
+    if (isTouchDevice) {
+      setIsEnabled(false);
+    }
+  }, []);
+  
+  // Don't render on touch devices to improve performance
+  if (!isEnabled) return null;
+  
+  // Smoother animation with RAF and throttling
   const animateCursor = () => {
-    if (cursorRef.current) {
+    const now = performance.now();
+    // Throttle updates to 60fps
+    if (now - lastUpdateTimeRef.current > 16 && cursorRef.current) {
       // Use transform for better performance
       cursorRef.current.style.transform = `translate3d(${positionRef.current.x}px, ${positionRef.current.y}px, 0) translate(-50%, -50%)`;
+      lastUpdateTimeRef.current = now;
     }
     requestRef.current = requestAnimationFrame(animateCursor);
   };
 
   useEffect(() => {
-    // Use passive event listener for better performance
+    if (!isEnabled) return;
+    
+    // Use passive event listener for better performance and throttle updates
     const updatePosition = (e: MouseEvent) => {
       positionRef.current = { x: e.clientX, y: e.clientY };
     };
@@ -27,22 +45,15 @@ const CustomCursor = () => {
     const handleMouseDown = () => setClicked(true);
     const handleMouseUp = () => setClicked(false);
     
-    const handleLinkHoverEvents = () => {
-      const elements = document.querySelectorAll('a, button');
-      const handleEnter = () => setLinkHovered(true);
-      const handleLeave = () => setLinkHovered(false);
-      
-      elements.forEach(el => {
-        el.addEventListener('mouseenter', handleEnter, { passive: true });
-        el.addEventListener('mouseleave', handleLeave, { passive: true });
-      });
-      
-      return () => {
-        elements.forEach(el => {
-          el.removeEventListener('mouseenter', handleEnter);
-          el.removeEventListener('mouseleave', handleLeave);
-        });
-      };
+    // Use event delegation instead of attaching listeners to all elements
+    const handleMouseMove = (e: MouseEvent) => {
+      const target = e.target as HTMLElement;
+      if (target && (target.tagName === 'A' || target.tagName === 'BUTTON' || 
+          target.closest('a') || target.closest('button'))) {
+        setLinkHovered(true);
+      } else {
+        setLinkHovered(false);
+      }
     };
 
     // Start animation loop
@@ -50,11 +61,9 @@ const CustomCursor = () => {
     
     // Add event listeners with passive option for better performance
     window.addEventListener('mousemove', updatePosition, { passive: true });
+    window.addEventListener('mousemove', handleMouseMove, { passive: true });
     window.addEventListener('mousedown', handleMouseDown, { passive: true });
     window.addEventListener('mouseup', handleMouseUp, { passive: true });
-    
-    // Handle link/button hover events
-    const cleanupHoverEvents = handleLinkHoverEvents();
     
     // Hide default cursor
     document.body.style.cursor = 'none';
@@ -65,12 +74,12 @@ const CustomCursor = () => {
         cancelAnimationFrame(requestRef.current);
       }
       window.removeEventListener('mousemove', updatePosition);
+      window.removeEventListener('mousemove', handleMouseMove);
       window.removeEventListener('mousedown', handleMouseDown);
       window.removeEventListener('mouseup', handleMouseUp);
-      cleanupHoverEvents();
       document.body.style.cursor = 'auto';
     };
-  }, []);
+  }, [isEnabled]);
 
   const cursorSize = clicked ? 'w-6 h-6' : linkHovered ? 'w-12 h-12' : 'w-8 h-8';
   const cursorColor = theme === 'dark' ? 'border-blue-400' : 'border-blue-600';
@@ -96,4 +105,4 @@ const CustomCursor = () => {
   );
 };
 
-export default CustomCursor; 
+export default memo(CustomCursor); 
