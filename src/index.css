@@ -308,3 +308,10 @@ body {
 .dark-transition {
   transition: background-color 0.5s ease-in-out, color 0.5s ease-in-out;
 } 
+
+
+.ribbons-container {
+  width: 100%;
+  height: 100%;
+  position: relative;
+}

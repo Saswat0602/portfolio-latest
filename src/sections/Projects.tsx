@@ -20,21 +20,30 @@ const Projects: React.FC = () => {
   const prefersReducedMotion = useReducedMotion();
 
   // Transform userData.Projects to the format needed by the component (only once)
-  const projects: ProjectItem[] = useMemo(() => userData.Projects.map(project => ({
-    title: project.project_name,
-    description: project.description,
-    image: project.image,
-    category: project.category,
-    github: project.code_link,
-    demo: project.demo_link,
-    technologies: project.technologies
-  })), []);
+  const projects: ProjectItem[] = useMemo(() => {
+    return userData.Projects.map(project => ({
+      title: project.project_name,
+      description: project.description,
+      image: project.image,
+      category: project.category,
+      github: project.code_link,
+      demo: project.demo_link,
+      technologies: project.technologies
+    }));
+  }, []);
+
+  // Get unique categories from projects for filter buttons
+  const categories = useMemo(() => {
+    const uniqueCategories = ['all', ...new Set(projects.map(project => project.category))];
+    return uniqueCategories;
+  }, [projects]);
 
   // Memoize filtered projects to prevent recalculation on every render
-  const filteredProjects = useMemo(() => 
-    projects.filter(project => activeFilter === 'all' || project.category === activeFilter),
-    [projects, activeFilter]
-  );
+  const filteredProjects = useMemo(() => {
+    return projects.filter(project => 
+      activeFilter === 'all' || project.category === activeFilter
+    );
+  }, [projects, activeFilter]);
 
   // Use useCallback for event handlers
   const handleFilterChange = useCallback((filter: string) => {
@@ -76,7 +85,7 @@ const Projects: React.FC = () => {
         </AnimatedSection>
 
         <div className="flex flex-wrap justify-center mb-12 gap-2 md:gap-4">
-          {['all', 'web', 'mobile', ].map((filter) => (
+          {categories.map((filter) => (
             <button
               key={filter}
               onClick={() => handleFilterChange(filter)}
@@ -91,105 +100,111 @@ const Projects: React.FC = () => {
           ))}
         </div>
 
-        <motion.div 
-          className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8"
-          variants={containerVariants}
-          initial="hidden"
-          whileInView="visible"
-          viewport={{ once: true, margin: "-100px" }}
-        >
-          {filteredProjects.map((project) => (
-            <motion.div
-              key={project.title}
-              className="group bg-white dark:bg-gray-800 rounded-xl overflow-hidden shadow-md"
-              variants={itemVariants}
-              whileHover={{ 
-                y: prefersReducedMotion ? 0 : -5,
-                transition: { duration: 0.2 } 
-              }}
-            >
-              <div className="relative h-56 overflow-hidden">
-                <img 
-                  src={project.image} 
-                  alt={project.title}
-                  className="w-full h-full object-cover transition-all duration-300 group-hover:scale-105"
-                  loading="lazy"
-                  decoding="async"
-                />
-                
-                {/* Description overlay (shown on hover) */}
-                <div 
-                  className="absolute inset-0 bg-blue-600 bg-opacity-90 p-5 flex items-center opacity-0 group-hover:opacity-100 transition-all duration-300 ease-in-out transform translate-y-2 group-hover:translate-y-0"
-                >
-                  <p className="text-white text-sm overflow-y-auto max-h-full">
-                    {project.description}
-                  </p>
-                </div>
-                
-                {/* Category badge */}
-                <div className="absolute top-4 left-4 z-10">
-                  <span className="px-3 py-1 text-xs font-medium rounded-full bg-blue-600 text-white">
-                    {project.category}
-                  </span>
-                </div>
-              </div>
-              
-              {/* Project details */}
-              <div className="p-5">
-                <h3 className="text-lg font-semibold text-gray-800 dark:text-white mb-2 transition-colors duration-200 group-hover:text-blue-600 dark:group-hover:text-blue-400">
-                  {project.title}
-                </h3>
-                
-                <div className="flex flex-wrap gap-2 mb-4">
-                  {project.technologies.slice(0, 3).map((tech, techIndex) => (
-                    <span 
-                      key={techIndex}
-                      className="px-2 py-1 text-xs rounded-md bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300"
-                    >
-                      {tech}
+        {filteredProjects.length > 0 ? (
+          <motion.div 
+            className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8"
+            variants={containerVariants}
+            initial="hidden"
+            whileInView="visible"
+            viewport={{ once: true, margin: "-100px" }}
+          >
+            {filteredProjects.map((project) => (
+              <motion.div
+                key={project.title}
+                className="group bg-white dark:bg-gray-800 rounded-xl overflow-hidden shadow-md"
+                variants={itemVariants}
+                whileHover={{ 
+                  y: prefersReducedMotion ? 0 : -5,
+                  transition: { duration: 0.2 } 
+                }}
+              >
+                <div className="relative h-56 overflow-hidden">
+                  <img 
+                    src={project.image} 
+                    alt={project.title}
+                    className="w-full h-full object-cover transition-all duration-300 group-hover:scale-105"
+                    loading="lazy"
+                    decoding="async"
+                  />
+                  
+                  {/* Description overlay (shown on hover) */}
+                  <div 
+                    className="absolute inset-0 bg-blue-600 bg-opacity-90 p-5 flex items-center opacity-0 group-hover:opacity-100 transition-all duration-300 ease-in-out transform translate-y-2 group-hover:translate-y-0"
+                  >
+                    <p className="text-white text-sm overflow-y-auto max-h-full">
+                      {project.description}
+                    </p>
+                  </div>
+                  
+                  {/* Category badge */}
+                  <div className="absolute top-4 left-4 z-10">
+                    <span className="px-3 py-1 text-xs font-medium rounded-full bg-blue-600 text-white">
+                      {project.category}
                     </span>
-                  ))}
-                  {project.technologies.length > 3 && (
-                    <span className="px-2 py-1 text-xs rounded-md bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300">
-                      +{project.technologies.length - 3}
-                    </span>
-                  )}
+                  </div>
                 </div>
                 
-                {/* Project links */}
-                <div className="flex space-x-4">
-                  {project.github && (
-                    <a 
-                      href={project.github} 
-                      target="_blank" 
-                      rel="noopener noreferrer"
-                      className="flex items-center gap-1.5 text-sm text-gray-600 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 transition-colors duration-200"
-                      aria-label={`View code for ${project.title}`}
-                    >
-                      <FiGithub size={16} />
-                      <span>Code</span>
-                    </a>
-                  )}
-                  {project.demo && (
-                    <a 
-                      href={project.demo} 
-                      target="_blank" 
-                      rel="noopener noreferrer"
-                      className="flex items-center gap-1.5 text-sm text-gray-600 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 transition-colors duration-200"
-                      aria-label={`View demo for ${project.title}`}
-                    >
-                      <FiExternalLink size={16} />
-                      <span>Demo</span>
-                    </a>
-                  )}
+                {/* Project details */}
+                <div className="p-5">
+                  <h3 className="text-lg font-semibold text-gray-800 dark:text-white mb-2 transition-colors duration-200 group-hover:text-blue-600 dark:group-hover:text-blue-400">
+                    {project.title}
+                  </h3>
+                  
+                  <div className="flex flex-wrap gap-2 mb-4">
+                    {project.technologies.slice(0, 3).map((tech, techIndex) => (
+                      <span 
+                        key={techIndex}
+                        className="px-2 py-1 text-xs rounded-md bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300"
+                      >
+                        {tech}
+                      </span>
+                    ))}
+                    {project.technologies.length > 3 && (
+                      <span className="px-2 py-1 text-xs rounded-md bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300">
+                        +{project.technologies.length - 3}
+                      </span>
+                    )}
+                  </div>
+                  
+                  {/* Project links */}
+                  <div className="flex space-x-4">
+                    {project.github && (
+                      <a 
+                        href={project.github} 
+                        target="_blank" 
+                        rel="noopener noreferrer"
+                        className="flex items-center gap-1.5 text-sm text-gray-600 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 transition-colors duration-200"
+                        aria-label={`View code for ${project.title}`}
+                      >
+                        <FiGithub size={16} />
+                        <span>Code</span>
+                      </a>
+                    )}
+                    {project.demo && (
+                      <a 
+                        href={project.demo} 
+                        target="_blank" 
+                        rel="noopener noreferrer"
+                        className="flex items-center gap-1.5 text-sm text-gray-600 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 transition-colors duration-200"
+                        aria-label={`View demo for ${project.title}`}
+                      >
+                        <FiExternalLink size={16} />
+                        <span>Demo</span>
+                      </a>
+                    )}
+                  </div>
                 </div>
-              </div>
-            </motion.div>
-          ))}
-        </motion.div>
+              </motion.div>
+            ))}
+          </motion.div>
+        ) : (
+          <div className="text-center py-12">
+            <p className="text-gray-600 dark:text-gray-300">No projects found for this category.</p>
+          </div>
+        )}
       </div>
     </section>
   );
 };
 
-export default Projects; 
+export default Projects;
