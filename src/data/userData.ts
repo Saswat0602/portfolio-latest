@@ -134,7 +134,7 @@ const userData: UserData = {
       code_link: "https://github.com/...",
       description: "Movie-App provides users with information about movies, including ratings, descriptions, and trailers. This application demonstrates integration with movie databases and responsive design principles.",
       image: "https://images.unsplash.com/photo-1536440136628-849c177e76a1?q=80&w=1000&auto=format&fit=crop",
-      category: "mobile",
+      category: "web",
       demo_link: "https://example.com/movie-app",
       technologies: ["React Native", "JavaScript", "API Integration"]
     },
@@ -152,7 +152,7 @@ const userData: UserData = {
       code_link: "https://github.com/...",
       description: "Note-Taker is a minimalist application for creating, organizing, and searching notes. This project demonstrates local storage implementation and responsive UI design.",
       image: "https://images.unsplash.com/photo-1501504905252-473c47e087f8?q=80&w=1000&auto=format&fit=crop",
-      category: "web",
+      category: "app",
       technologies: ["JavaScript", "HTML5", "CSS3", "LocalStorage"]
     },
     {

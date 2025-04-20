@@ -5,6 +5,7 @@ import userData from '../data/userData';
 import { motion } from 'framer-motion';
 import { realHeroCode1 } from '../data/realHeroCode';
 import BackgroundElements from '../widget/BackgroundElements';
+import { useCodeSnippets } from '../hooks/useCodeSnippets';
 
 const Contact: React.FC = () => {
   const [formData, setFormData] = useState({
@@ -15,53 +16,8 @@ const Contact: React.FC = () => {
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitted, setSubmitted] = useState(false);
-  const [codeSnippets, setCodeSnippets] = useState<React.ReactNode[]>([]);
+  const codeSnippets = useCodeSnippets(true);
 
-  // Generate code snippets for background
-  useEffect(() => {
-    const generateCodeSnippets = () => {
-      const snippets = [];
-      const snippetCount = 6;
-
-      for (let i = 0; i < snippetCount; i++) {
-        const top = 5 + Math.random() * 80;
-        const left = 5 + Math.random() * 90;
-        const opacity = 0.1 + Math.random() * 0.1;
-        const width = 150 + Math.random() * 200;
-        const fontSize = 8 + Math.random() * 2;
-
-        snippets.push(
-          <motion.pre
-            key={i}
-            className="absolute font-mono opacity-0 text-blue-600/40 dark:text-blue-400/50 pointer-events-none overflow-hidden"
-            style={{
-              top: `${top}%`,
-              left: `${left}%`,
-              width: `${width}px`,
-              lineHeight: '1.2',
-              maxHeight: '300px',
-              fontSize: `${fontSize}px`
-            }}
-            animate={{
-              opacity: [0, opacity],
-              y: [10, 0]
-            }}
-            transition={{
-              duration: 1,
-              delay: Math.random() * 0.5,
-            }}
-          >
-            {realHeroCode1}
-
-          </motion.pre>
-        );
-      }
-
-      setCodeSnippets(snippets);
-    };
-
-    generateCodeSnippets();
-  }, []);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;

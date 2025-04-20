@@ -75,9 +75,8 @@ const Projects: React.FC = () => {
           </h2>
         </AnimatedSection>
 
-        {/* Filter buttons */}
         <div className="flex flex-wrap justify-center mb-12 gap-2 md:gap-4">
-          {['all', 'web', 'mobile', 'design'].map((filter) => (
+          {['all', 'web', 'mobile', ].map((filter) => (
             <button
               key={filter}
               onClick={() => handleFilterChange(filter)}
@@ -92,7 +91,6 @@ const Projects: React.FC = () => {
           ))}
         </div>
 
-        {/* Projects grid */}
         <motion.div 
           className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8"
           variants={containerVariants}
@@ -110,9 +108,7 @@ const Projects: React.FC = () => {
                 transition: { duration: 0.2 } 
               }}
             >
-              {/* Project thumbnail with description overlay */}
               <div className="relative h-56 overflow-hidden">
-                {/* Image */}
                 <img 
                   src={project.image} 
                   alt={project.title}

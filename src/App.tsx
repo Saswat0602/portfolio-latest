@@ -23,40 +23,10 @@ const PRIORITY = {
 };
 
 const App: React.FC = () => {
-  // Use a single state object to track loading progress
   const [loadingStage, setLoadingStage] = useState(PRIORITY.CRITICAL);
-  const [sectionsInView, setSectionsInView] = useState<Record<string, boolean>>({});
 
-  useEffect(() => {
-    const observer = new IntersectionObserver((entries) => {
-      entries.forEach((entry) => {
-        if (entry.isIntersecting) {
-          entry.target.classList.add('active');
+ 
 
-          if (entry.target.id) {
-            setSectionsInView(prev => ({
-              ...prev,
-              [entry.target.id]: true
-            }));
-          }
-        }
-      });
-    }, { threshold: 0.1 });
-
-    // Observe all elements with the scroll-animate class
-    document.querySelectorAll('.scroll-animate').forEach((el) => {
-      observer.observe(el);
-    });
-
-    // Observe sections for component loading
-    document.querySelectorAll('section[id]').forEach((el) => {
-      observer.observe(el);
-    });
-
-    return () => observer.disconnect();
-  }, []);
-
-  // Progressive loading based on a stage approach
   useEffect(() => {
     if (loadingStage === PRIORITY.CRITICAL) {
       // Move to next stage after initial render
@@ -73,7 +43,6 @@ const App: React.FC = () => {
     }
   }, [loadingStage]);
 
-  // Render components based on loading stage
   const shouldRender = {
     hero: loadingStage >= PRIORITY.HIGH,
     about: loadingStage >= PRIORITY.HIGH,

@@ -3,57 +3,12 @@ import AnimatedSection from '../components/AnimatedSection';
 import userData from '../data/userData';
 import { motion } from 'framer-motion';
 import { FiMapPin, FiMail, FiBook, FiAward } from 'react-icons/fi';
-import { realHeroCode1 } from '../data/realHeroCode';
 import BackgroundElements from '../widget/BackgroundElements';
+import { useCodeSnippets } from '../hooks/useCodeSnippets';
 
 const About: React.FC = () => {
   const [isImageHovered, setIsImageHovered] = useState(false);
-  const [codeSnippets, setCodeSnippets] = useState<React.ReactNode[]>([]);
-
-  useEffect(() => {
-    const generateCodeSnippets = () => {
-      const snippets = [];
-      const snippetCount = 6;
-
-      for (let i = 0; i < snippetCount; i++) {
-        const top = 5 + Math.random() * 80;
-        const left = 5 + Math.random() * 90;
-        const opacity = 0.1 + Math.random() * 0.1;
-        const width = 150 + Math.random() * 200;
-        const fontSize = 8 + Math.random() * 2;
-
-        snippets.push(
-          <motion.pre
-            key={i}
-            className="absolute font-mono opacity-0 text-blue-600/40 dark:text-blue-400/50 pointer-events-none overflow-hidden"
-            style={{
-              top: `${top}%`,
-              left: `${left}%`,
-              width: `${width}px`,
-              lineHeight: '1.2',
-              maxHeight: '300px',
-              fontSize: `${fontSize}px`
-            }}
-            animate={{
-              opacity: [0, opacity],
-              y: [10, 0]
-            }}
-            transition={{
-              duration: 1,
-              delay: Math.random() * 0.5,
-            }}
-          >
-            {realHeroCode1}
-          </motion.pre>
-        );
-      }
-
-      setCodeSnippets(snippets);
-    };
-
-    generateCodeSnippets();
-  }, []);
-
+  const codeSnippets = useCodeSnippets(true);
   const containerVariants = {
     hidden: { opacity: 0 },
     visible: {

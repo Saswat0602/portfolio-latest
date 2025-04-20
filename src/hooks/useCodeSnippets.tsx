@@ -1,63 +1,65 @@
-// hooks/useCodeSnippets.tsx
-import { useEffect, useState } from "react";
-import RealCodeSnippet from "../widget/RealCodeSnippet";
+import { useState, useEffect } from 'react';
+import RealCodeSnippet from '../widget/RealCodeSnippet';
 import { realHeroCode1, realHeroCode2 } from '../data/realHeroCode';
 
-type UseCodeSnippetsProps = {
-    codes: string[];
-    isClientSide?: boolean;
-    snippetsPerRow?: number;
-    rowCount?: number;
-    offsetTop?: number;
-    spacingY?: number;
-};
-const useCodeSnippets = ({
-    isClientSide = typeof window !== 'undefined',
-    snippetsPerRow = 4,
-    rowCount = 2,
-    offsetTop = 15,
-    spacingY = 30,
-}: UseCodeSnippetsProps) => {
-    const codes = [realHeroCode1, realHeroCode2];
 
+const getRandomGradient = () => {
+  const gradients = [
+    'from-pink-500 via-red-500 to-yellow-500',
+    'from-purple-500 via-indigo-500 to-blue-500',
+    'from-green-400 via-cyan-500 to-blue-500',
+    'from-yellow-400 via-pink-500 to-red-500',
+    'from-rose-400 via-fuchsia-500 to-indigo-500'
+  ];
+  return gradients[Math.floor(Math.random() * gradients.length)];
+};
+
+
+
+export const useCodeSnippets = (isClientSide: boolean, isHero?: boolean) => {
     const [codeSnippets, setCodeSnippets] = useState<React.ReactNode[]>([]);
-
+  
+    const codeExamples = isHero ? [realHeroCode1, realHeroCode2] : [realHeroCode1];
+    const snippetCount = 10; // Number of floating snippets on screen
+  
+    const widthMin = 150;
+    const widthMax = 450;
+    const fontSizeMin = 8;
+    const fontSizeMax = 10;
+  
     useEffect(() => {
-        if (!isClientSide) return;
+      if (!isClientSide) return;
+  
+      const snippets: React.ReactNode[] = [];
+  
+      for (let i = 0; i < snippetCount; i++) {
+        const left = Math.random() * 90; 
+        const top = Math.random() * 100;
+  
+        const opacity = 0.2 + Math.random() * 0.15;
+        const width = widthMin + Math.random() * (widthMax - widthMin);
+        const fontSize = fontSizeMin + Math.random() * (fontSizeMax - fontSizeMin);
+        const code = codeExamples[i % codeExamples.length];
+        const gradient = getRandomGradient();
 
-        const snippets: React.ReactNode[] = [];
+        snippets.push(
+          <RealCodeSnippet
+            key={`snippet-${i}`}
+            code={code}
+            opacity={opacity}
+            top={top}
+            left={left}
+            width={width}
+            fontSize={fontSize}
+            gradient={gradient}
 
-        for (let row = 0; row < rowCount; row++) {
-            const baseTop = offsetTop + row * spacingY;
-
-            for (let i = 0; i < snippetsPerRow; i++) {
-                const baseLeft = (i / snippetsPerRow) * 85;
-
-                const top = baseTop + (Math.random() * 10 - 5);
-                const left = baseLeft + (Math.random() * 10 - 5);
-                const opacity = 0.2 + Math.random() * 0.15;
-                const width = 150 + Math.random() * 300;
-                const fontSize = 8 + Math.random() * 2;
-                const code = codes[(row * snippetsPerRow + i) % codes.length];
-
-                snippets.push(
-                    <RealCodeSnippet
-                        key={`${row}-${i}`}
-                        code={code}
-                        opacity={opacity}
-                        top={top}
-                        left={left}
-                        width={width}
-                        fontSize={fontSize}
-                    />
-                );
-            }
-        }
-
-        setCodeSnippets(snippets);
-    }, [isClientSide, codes, snippetsPerRow, rowCount, offsetTop, spacingY]);
-
+          />
+        );
+      }
+  
+      setCodeSnippets(snippets);
+    }, [isClientSide]);
+  
     return codeSnippets;
-};
-
-export default useCodeSnippets;
+  };
+  

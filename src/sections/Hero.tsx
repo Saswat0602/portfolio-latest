@@ -1,4 +1,4 @@
-import React, { useRef, useEffect, useState, lazy, Suspense, useMemo } from 'react';
+import React, { useRef, lazy, Suspense, useMemo } from 'react';
 import { FiGithub, FiLinkedin, FiMail } from 'react-icons/fi';
 import AnimatedSection from '../components/AnimatedSection';
 import TextAnimation from '../components/TextAnimation';
@@ -6,54 +6,11 @@ import { useTheme } from '../hooks/useTheme';
 import LaptopAnimation from '../components/LaptopAnimation';
 const MatrixCodeRain = lazy(() => import('../components/MatrixCodeRain'));
 import userData from '../data/userData';
-import { realHeroCode1, realHeroCode2 } from '../data/realHeroCode';
-import RealCodeSnippet from '../widget/RealCodeSnippet';
 import { useClientSideEffects, useMouseParallax } from '../hooks/useHeroHooks';
+import { useCodeSnippets } from '../hooks/useCodeSnippets';
 
 
-const useCodeSnippets = (isClientSide: boolean) => {
-  const [codeSnippets, setCodeSnippets] = useState<React.ReactNode[]>([]);
 
-  useEffect(() => {
-    if (!isClientSide) return;
-    
-    const snippets: React.ReactNode[] = [];
-    const snippetsPerRow = 4;
-    const rowCount = 2;      
-    const codes = [realHeroCode1, realHeroCode2];
-    
-    for (let row = 0; row < rowCount; row++) {
-      const baseTop = 15 + (row * 30); 
-      
-      for (let i = 0; i < snippetsPerRow; i++) {
-        const baseLeft = (i / snippetsPerRow) * 85; 
-        
-        const top = baseTop + (Math.random() * 10 - 5); 
-        const left = baseLeft + (Math.random() * 10 - 5); 
-        const opacity = 0.2 + Math.random() * 0.15;
-        const width = 150 + Math.random() * 300;
-        const fontSize = 8 + Math.random() * 2;
-        const code = codes[(row * snippetsPerRow + i) % codes.length];
-        
-        snippets.push(
-          <RealCodeSnippet 
-            key={`${row}-${i}`} 
-            code={code}
-            opacity={opacity} 
-            top={top} 
-            left={left}
-            width={width}
-            fontSize={fontSize}
-          />
-        );
-      }
-    }
-    
-    setCodeSnippets(snippets);
-  }, [isClientSide]);
-
-  return codeSnippets;
-};
 
 const useParticles = (isClientSide: boolean, theme: string, count: number = 8) => {
   return useMemo(() => {
@@ -84,7 +41,7 @@ const Hero: React.FC = () => {
   const { theme } = useTheme();
   const containerRef = useRef<HTMLDivElement>(null);
   const { isClientSide, showMatrixRain } = useClientSideEffects();
-  const codeSnippets = useCodeSnippets(isClientSide);
+  const codeSnippets = useCodeSnippets(isClientSide,true);
   const particles = useParticles(isClientSide, theme);
   
   // Setup mouse parallax effect

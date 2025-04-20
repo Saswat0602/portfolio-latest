@@ -3,15 +3,6 @@ import { FiGithub, FiLinkedin, FiTwitter, FiInstagram, FiMail, FiArrowRight } fr
 import userData from '../data/userData';
 
 const Footer: React.FC = () => {
-  const currentYear = new Date().getFullYear();
-  
-  const socialIcons = {
-    "GitHub": <FiGithub size={20} />,
-    "LinkedIn": <FiLinkedin size={20} />,
-    "Twitter": <FiTwitter size={20} />,
-    "Instagram": <FiInstagram size={20} />,
-    "Email": <FiMail size={20} />
-  };
   
   const socialLinks = [
     { href: userData.footer.socialLinks[0].href, icon: <FiLinkedin size={20} />, label: "LinkedIn" },
