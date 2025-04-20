@@ -1,5 +1,5 @@
 import { FC, CSSProperties } from "react";
-import "./GlitchText.css";
+import "../styles/glitchText.css";
 
 interface GlitchTextProps {
   children: string;
