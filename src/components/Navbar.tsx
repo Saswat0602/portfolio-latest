@@ -34,15 +34,15 @@ const Navbar: React.FC = () => {
   return (
     <nav
       className={`fixed w-full z-50 transition-all duration-300 ${scrolled
-          ? 'bg-white/80 dark:bg-slate-900/80 backdrop-blur-md py-2 shadow-md'
-          : 'bg-transparent py-3'
+        ? 'bg-white/80 dark:bg-slate-900/80 backdrop-blur-md py-2 shadow-md'
+        : 'bg-transparent py-3'
         }`}
     >
       <div className="container mx-auto px-4 flex justify-between items-center">
-      <a
-  href="#"
-  className="text-sm sm:text-2xl font-bold text-blue-600 dark:text-blue-400 flex items-center"
->
+        <a
+          href="#"
+          className="text-sm sm:text-2xl font-bold text-blue-600 dark:text-blue-400 flex items-center"
+        >
 
           <GlitchText
             speed={0.6}
