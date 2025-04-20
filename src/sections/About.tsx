@@ -5,6 +5,7 @@ import { motion } from 'framer-motion';
 import { FiMapPin, FiMail, FiBook, FiAward } from 'react-icons/fi';
 import BackgroundElements from '../widget/BackgroundElements';
 import { useCodeSnippets } from '../hooks/useCodeSnippets';
+import PixelTransition from '../widget/PixelTransition';
 
 const About: React.FC = () => {
   const [isImageHovered, setIsImageHovered] = useState(false);
@@ -218,35 +219,39 @@ const About: React.FC = () => {
                 }}
                 whileHover={{ scale: 1.03 }}
               >
-                <motion.div
-                  className="absolute inset-0 bg-gradient-to-br from-blue-500 to-purple-600 animate-pulse opacity-80"
-                  style={{ animationDuration: '3s' }}
-                ></motion.div>
-                <div className="relative aspect-square bg-gray-200 dark:bg-gray-800 rounded-xl overflow-hidden">
-                  {/* Laptop image from Unsplash */}
-                  <img
-                    src="https://images.unsplash.com/photo-1517336714731-489689fd1ca8?q=80&w=1000&auto=format&fit=crop"
-                    alt="Laptop on desk"
-                    className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
-                  />
 
-                  {/* Overlay on hover */}
-                  <motion.div
-                    className="absolute inset-0 bg-gradient-to-t from-blue-600/90 to-purple-600/80 flex items-center justify-center"
-                    initial={{ opacity: 0 }}
-                    animate={{ opacity: isImageHovered ? 0.9 : 0 }}
-                    transition={{ duration: 0.3 }}
-                  >
-                    <motion.span
-                      className="text-white font-medium text-lg"
-                      initial={{ scale: 0 }}
-                      animate={{ scale: isImageHovered ? 1 : 0 }}
-                      transition={{ duration: 0.4, delay: 0.1 }}
+                <PixelTransition
+                  firstContent={
+                    <img
+                      src="https://images.unsplash.com/photo-1517336714731-489689fd1ca8?q=80&w=1000&auto=format&fit=crop"
+                      alt="Saswat.Dev"
+                      style={{
+                        width: "100%",
+                        height: "100%",
+                        objectFit: "fill",
+                        position: "absolute",
+                 
+                      }}
+                    />
+                  }
+
+                  secondContent={
+                    <div
+                      style={{
+                        width: "100%",
+                        height: "100%",
+                        display: "grid",
+                        placeItems: "center",
+                        backgroundColor: "#111"
+                      }}
                     >
-                      App Developer
-                    </motion.span>
-                  </motion.div>
-                </div>
+                      <p style={{ fontWeight: 900, fontSize: "3rem", color: "#ffffff" }}>Saswat.Dev!</p>
+                    </div>
+                  }
+                  gridSize={15}
+                  pixelColor='#431c7d'
+                  animationStepDuration={0.4}
+                />
               </motion.div>
             </div>
           </AnimatedSection>
@@ -256,4 +261,4 @@ const About: React.FC = () => {
   );
 };
 
-export default About; 
+export default About;
