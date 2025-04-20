@@ -1,9 +1,7 @@
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import AnimatedSection from '../components/AnimatedSection';
 import { FiBriefcase, FiCalendar, FiMapPin, FiClock, FiChevronRight } from 'react-icons/fi';
 import userData from '../data/userData';
-import { motion } from 'framer-motion';
-import { realHeroCode1 } from '../data/realHeroCode';
 import BackgroundElements from '../widget/BackgroundElements';
 import { useCodeSnippets } from '../hooks/useCodeSnippets';
 

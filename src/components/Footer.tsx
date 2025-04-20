@@ -99,11 +99,7 @@ const Footer: React.FC = () => {
         {/* Copyright */}
         <div className="border-t border-gray-800 pt-8 mt-12 text-center text-gray-400">
           <p className="hover:text-white transition-colors duration-300">{userData.footer.copyright}</p>
-          <p className="mt-2 text-sm hover:text-blue-400 transition-colors duration-300">
-            Designed and developed with 
-            <span className="mx-1 text-red-500 animate-pulse inline-block">❤️</span> 
-            using React and Tailwind CSS
-          </p>
+     
         </div>
       </div>
     </footer>

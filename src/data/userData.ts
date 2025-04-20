@@ -220,8 +220,8 @@ const userData: UserData = {
     ],
     contact: {
       location: "Bhubaneswar, Odisha, India",
-      email: "contact@saswatmohanty.com",
-      phone: "+91 98765 43210"
+      email: "saswatranjan0602@gmail.com",
+      phone: "+91 xxxxx xxxxx"
     },
     copyright: "© 2025 Saswat Ranjan Mohanty. All rights reserved."
   }
