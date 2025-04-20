@@ -6,7 +6,6 @@ const LaptopAnimation: React.FC = () => {
   const containerRef = useRef<HTMLDivElement>(null);
   const codeElementsRef = useRef<HTMLDivElement>(null);
   const [isInView, setIsInView] = useState(false);
-  const requestRef = useRef<number | null>(null);
   
   // Reduced array of tech words for better performance
   const techWords = [

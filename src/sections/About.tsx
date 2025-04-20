@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import AnimatedSection from '../components/AnimatedSection';
 import userData from '../data/userData';
 import { motion } from 'framer-motion';

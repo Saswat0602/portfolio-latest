@@ -1,9 +1,9 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, RefObject } from "react";
 
 
-export const useMouseParallax = (isClientSide: boolean, containerRef: React.RefObject<HTMLDivElement>) => {
+export const useMouseParallax = (isClientSide: boolean, containerRef: RefObject<HTMLDivElement | null>) => {
     useEffect(() => {
-        if (!isClientSide) return;
+        if (!isClientSide || !containerRef.current) return;
 
         let rafId: number | undefined;
         let mouseX = 0;
