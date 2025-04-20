@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useTheme } from '../hooks/useTheme';
 import { FiSun, FiMoon, FiMenu, FiX } from 'react-icons/fi';
 import TextAnimation from './TextAnimation';
+import GlitchText from '../reactbits/GlitchText';
 
 const Navbar: React.FC = () => {
   const { theme, toggleTheme, isTransitioning } = useTheme();
@@ -31,24 +32,26 @@ const Navbar: React.FC = () => {
   };
 
   return (
-    <nav 
-      className={`fixed w-full z-50 transition-all duration-300 ${
-        scrolled 
-          ? 'bg-white/80 dark:bg-slate-900/80 backdrop-blur-md py-2 shadow-md' 
+    <nav
+      className={`fixed w-full z-50 transition-all duration-300 ${scrolled
+          ? 'bg-white/80 dark:bg-slate-900/80 backdrop-blur-md py-2 shadow-md'
           : 'bg-transparent py-3'
-      }`}
+        }`}
     >
       <div className="container mx-auto px-4 flex justify-between items-center">
-        {/* Logo */}
-        <a 
-          href="#" 
-          className="text-xl sm:text-2xl font-bold text-blue-600 dark:text-blue-400 flex items-center"
-        >
-          <TextAnimation 
-            text="Saswat.dev" 
-            effect="pressure"
-            className="animate-slide-in" 
-          />
+      <a
+  href="#"
+  className="text-sm sm:text-2xl font-bold text-blue-600 dark:text-blue-400 flex items-center"
+>
+
+          <GlitchText
+            speed={1}
+            enableShadows={true}
+            enableOnHover={false}
+            className='custom-class'
+          >
+            Saswat.Dev
+          </GlitchText>
         </a>
 
         {/* Desktop Navigation */}
@@ -61,8 +64,8 @@ const Navbar: React.FC = () => {
                         font-medium text-sm animate-fade-in`}
               style={{ animationDelay: `${index * 0.1}s` }}
             >
-              <TextAnimation 
-                text={link.name} 
+              <TextAnimation
+                text={link.name}
                 effect="glow"
               />
             </a>
