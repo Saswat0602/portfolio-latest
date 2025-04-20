@@ -45,7 +45,7 @@ const Navbar: React.FC = () => {
 >
 
           <GlitchText
-            speed={1}
+            speed={0.6}
             enableShadows={true}
             enableOnHover={false}
             className='custom-class'

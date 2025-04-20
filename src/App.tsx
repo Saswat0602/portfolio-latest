@@ -14,7 +14,6 @@ const Projects = lazy(() => import('./sections/Projects'));
 const Contact = lazy(() => import('./sections/Contact'));
 const SplashCursor = lazy(() => import('./reactbits/SplashCursor'));
 
-// Component priority groups
 const PRIORITY = {
   CRITICAL: 0,   // Load immediately
   HIGH: 1,       // Load right after initial render

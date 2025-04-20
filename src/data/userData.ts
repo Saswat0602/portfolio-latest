@@ -160,7 +160,7 @@ const userData: UserData = {
       code_link: "https://github.com/...",
       description: "Food-Ordering-App allows users to browse restaurants, view menus, and place orders. This project showcases cart functionality, payment integration, and a smooth user experience.",
       image: "https://images.unsplash.com/photo-1565299507177-b0ac66763828?q=80&w=1000&auto=format&fit=crop",
-      category: "mobile",
+      category: "app",
       demo_link: "https://example.com/food-order",
       technologies: ["React Native", "Firebase", "Redux", "Payment Gateway"]
     }

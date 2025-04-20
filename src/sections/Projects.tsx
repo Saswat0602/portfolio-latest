@@ -1,4 +1,4 @@
-import React, { useState, useMemo, useCallback } from 'react';
+import React, { useState, useMemo, useCallback, useEffect } from 'react';
 import { FiGithub, FiExternalLink } from 'react-icons/fi';
 import AnimatedSection from '../components/AnimatedSection';
 import userData from '../data/userData';
@@ -17,6 +17,7 @@ interface ProjectItem {
 
 const Projects: React.FC = () => {
   const [activeFilter, setActiveFilter] = useState('all');
+  const [filteredProjects, setFilteredProjects] = useState<ProjectItem[]>([]);
   const prefersReducedMotion = useReducedMotion();
 
   // Transform userData.Projects to the format needed by the component (only once)
@@ -34,16 +35,18 @@ const Projects: React.FC = () => {
 
   // Get unique categories from projects for filter buttons
   const categories = useMemo(() => {
-    const uniqueCategories = ['all', ...new Set(projects.map(project => project.category))];
+    const uniqueCategories = ['all', ...Array.from(new Set(projects.map(project => project.category)))];
     return uniqueCategories;
   }, [projects]);
 
-  // Memoize filtered projects to prevent recalculation on every render
-  const filteredProjects = useMemo(() => {
-    return projects.filter(project => 
-      activeFilter === 'all' || project.category === activeFilter
-    );
-  }, [projects, activeFilter]);
+  // Update filtered projects whenever activeFilter changes
+  useEffect(() => {
+    const filtered = activeFilter === 'all'
+      ? projects
+      : projects.filter(project => project.category === activeFilter);
+    
+    setFilteredProjects(filtered);
+  }, [activeFilter, projects]);
 
   // Use useCallback for event handlers
   const handleFilterChange = useCallback((filter: string) => {
@@ -74,6 +77,11 @@ const Projects: React.FC = () => {
     }
   };
 
+  // For debugging
+  console.log('Active filter:', activeFilter);
+  console.log('Available categories:', categories);
+  console.log('Number of filtered projects:', filteredProjects.length);
+
   return (
     <section id="projects" className="py-20 bg-gray-50 dark:bg-slate-900 overflow-hidden">
       <div className="container mx-auto px-4">
@@ -102,10 +110,11 @@ const Projects: React.FC = () => {
 
         {filteredProjects.length > 0 ? (
           <motion.div 
+            key={activeFilter} // Add key to force re-render when filter changes
             className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8"
             variants={containerVariants}
             initial="hidden"
-            whileInView="visible"
+            animate="visible" // Changed from whileInView to ensure it animates when filter changes
             viewport={{ once: true, margin: "-100px" }}
           >
             {filteredProjects.map((project) => (
