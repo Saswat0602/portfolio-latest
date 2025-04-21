@@ -39,7 +39,7 @@ const App: React.FC = () => {
     } else if (loadingStage === PRIORITY.LOW) {
       const timer = setTimeout(() => {
         setIsLoading(false);
-      }, 300);
+      }, 800);
       
       return () => clearTimeout(timer);
     }
