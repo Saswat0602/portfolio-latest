@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React from 'react';
 import AnimatedSection from '../components/AnimatedSection';
 import userData from '../data/userData';
 import { motion } from 'framer-motion';
@@ -8,7 +8,6 @@ import { useCodeSnippets } from '../hooks/useCodeSnippets';
 import PixelTransition from '../widget/PixelTransition';
 
 const About: React.FC = () => {
-  const [isImageHovered, setIsImageHovered] = useState(false);
   const codeSnippets = useCodeSnippets(true);
   const containerVariants = {
     hidden: { opacity: 0 },
@@ -200,8 +199,6 @@ const About: React.FC = () => {
               {/* Profile image container with enhanced animated border */}
               <motion.div
                 className="relative z-10 rounded-2xl overflow-hidden bg-gradient-to-br from-blue-500 to-purple-600 p-1.5 shadow-xl"
-                onMouseEnter={() => setIsImageHovered(true)}
-                onMouseLeave={() => setIsImageHovered(false)}
                 initial={{ opacity: 0, scale: 0.9 }}
                 animate={{
                   opacity: 1,

@@ -1,4 +1,4 @@
-import React, { useRef, useEffect, FC } from 'react';
+import { useRef, useEffect, FC } from 'react';
 import * as THREE from 'three';
 
 // Vertex Shader

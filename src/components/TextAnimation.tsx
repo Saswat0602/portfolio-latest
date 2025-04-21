@@ -19,7 +19,7 @@ const TextAnimation: React.FC<TextAnimationProps> = ({
 }) => {
   const [displayedText, setDisplayedText] = useState('');
   const [hoveredIndex, setHoveredIndex] = useState<number | null>(null);
-  const intervalRef = useRef<NodeJS.Timeout | null>(null);
+  const intervalRef = useRef<number | null>(null);
 
   // Combined typewriter effect in one useEffect
   useEffect(() => {
