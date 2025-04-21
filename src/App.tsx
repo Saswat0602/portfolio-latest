@@ -12,7 +12,7 @@ const Experience = lazy(() => import('./sections/Experience'));
 const Skills = lazy(() => import('./sections/Skills'));
 const Projects = lazy(() => import('./sections/Projects'));
 const Contact = lazy(() => import('./sections/Contact'));
-const SplashCursor = lazy(() => import('./reactbits/SplashCursor'));
+// const SplashCursor = lazy(() => import('./reactbits/SplashCursor'));
 
 const PRIORITY = {
   CRITICAL: 0,   // Load immediately
@@ -68,7 +68,7 @@ const App: React.FC = () => {
 
         {shouldRender.splashCursor && (
           <Suspense fallback={null}>
-            <SplashCursor />
+            {/* <SplashCursor /> */}
             <CustomCursor />
           </Suspense>
         )}
