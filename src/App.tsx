@@ -4,8 +4,8 @@ import Navbar from './components/Navbar';
 import Footer from './components/Footer';
 import CustomCursor from './components/CustomCursor';
 import LoadingScreen from './components/LoadingScreen';
+// import SplashCursor from './reactbits/SplashCursor';
 
-// Lazy load components
 const StarryBackground = lazy(() => import('./components/StarryBackground'));
 const Hero = lazy(() => import('./sections/Hero'));
 const About = lazy(() => import('./sections/About'));
@@ -13,47 +13,60 @@ const Experience = lazy(() => import('./sections/Experience'));
 const Skills = lazy(() => import('./sections/Skills'));
 const Projects = lazy(() => import('./sections/Projects'));
 const Contact = lazy(() => import('./sections/Contact'));
-// const SplashCursor = lazy(() => import('./reactbits/SplashCursor'));
 
 const PRIORITY = {
-  CRITICAL: 0,   // Load immediately
-  HIGH: 1,       // Load right after initial render
-  MEDIUM: 2,     // Load shortly after
-  LOW: 3         // Load last
+  CRITICAL: 0,
+  HIGH: 1,
+  MEDIUM: 2,
+  LOW: 3
 };
 
 const App: React.FC = () => {
   const [loadingStage, setLoadingStage] = useState(PRIORITY.CRITICAL);
   const [isLoading, setIsLoading] = useState(true);
-  const [componentsReady, setComponentsReady] = useState(false);
 
   useEffect(() => {
     if (loadingStage === PRIORITY.CRITICAL) {
-      // Move to next stage after initial render
       requestAnimationFrame(() => {
         setLoadingStage(PRIORITY.HIGH);
       });
     } else if (loadingStage < PRIORITY.LOW) {
-      // Progress through stages with minimal delay
       const timer = setTimeout(() => {
         setLoadingStage(prevStage => prevStage + 1);
-      }, loadingStage * 200); // Increasing delay based on priority
-
+      }, loadingStage * 150);
+      
       return () => clearTimeout(timer);
-    } else if (loadingStage === PRIORITY.LOW && !componentsReady) {
-      // Mark components as ready when we reach the final loading stage
-      setComponentsReady(true);
-    }
-  }, [loadingStage, componentsReady]);
-
-  useEffect(() => {
-    if (componentsReady && isLoading) {
+    } else if (loadingStage === PRIORITY.LOW) {
       const timer = setTimeout(() => {
         setIsLoading(false);
-      }, 500);
+      }, 300);
+      
       return () => clearTimeout(timer);
     }
-  }, [componentsReady, isLoading]);
+  }, [loadingStage]);
+
+  useEffect(() => {
+    const preloadComponents = async () => {
+      try {
+        await Promise.all([
+          import('./sections/Hero'),
+          import('./sections/About')
+        ]);
+        
+        Promise.all([
+          import('./components/StarryBackground'),
+          import('./sections/Experience'),
+          import('./sections/Skills'),
+          import('./sections/Projects'),
+          import('./sections/Contact')
+        ]);
+      } catch (error) {
+        console.error('Error preloading components:', error);
+      }
+    };
+    
+    preloadComponents();
+  }, []);
 
   const shouldRender = {
     hero: loadingStage >= PRIORITY.HIGH,
@@ -82,7 +95,7 @@ const App: React.FC = () => {
 
           {shouldRender.splashCursor && (
             <Suspense fallback={null}>
-              {/* <SplashCursor /> */}
+              {/* <SplashCursor/> */}
               <CustomCursor />
             </Suspense>
           )}
