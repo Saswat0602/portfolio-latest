@@ -3,6 +3,7 @@ import { ThemeProvider } from './context/ThemeContext';
 import Navbar from './components/Navbar';
 import Footer from './components/Footer';
 import CustomCursor from './components/CustomCursor';
+import LoadingScreen from './components/LoadingScreen';
 
 // Lazy load components
 const StarryBackground = lazy(() => import('./components/StarryBackground'));
@@ -23,8 +24,8 @@ const PRIORITY = {
 
 const App: React.FC = () => {
   const [loadingStage, setLoadingStage] = useState(PRIORITY.CRITICAL);
-
- 
+  const [isLoading, setIsLoading] = useState(true);
+  const [componentsReady, setComponentsReady] = useState(false);
 
   useEffect(() => {
     if (loadingStage === PRIORITY.CRITICAL) {
@@ -39,8 +40,20 @@ const App: React.FC = () => {
       }, loadingStage * 200); // Increasing delay based on priority
 
       return () => clearTimeout(timer);
+    } else if (loadingStage === PRIORITY.LOW && !componentsReady) {
+      // Mark components as ready when we reach the final loading stage
+      setComponentsReady(true);
     }
-  }, [loadingStage]);
+  }, [loadingStage, componentsReady]);
+
+  useEffect(() => {
+    if (componentsReady && isLoading) {
+      const timer = setTimeout(() => {
+        setIsLoading(false);
+      }, 500);
+      return () => clearTimeout(timer);
+    }
+  }, [componentsReady, isLoading]);
 
   const shouldRender = {
     hero: loadingStage >= PRIORITY.HIGH,
@@ -53,56 +66,56 @@ const App: React.FC = () => {
     splashCursor: loadingStage >= PRIORITY.LOW
   };
 
-
   return (
     <ThemeProvider>
-      <div className="relative min-h-screen bg-gray-50 dark:bg-slate-900 transition-colors dark-transition">
+      {isLoading ? (
+        <LoadingScreen finishLoading={() => setIsLoading(false)} />
+      ) : (
+        <div className="relative min-h-screen bg-gray-50 dark:bg-slate-900 transition-colors dark-transition">
+          {shouldRender.background && (
+            <Suspense fallback={null}>
+              <StarryBackground />
+            </Suspense>
+          )}
 
-        {shouldRender.background && (
-          <Suspense fallback={null}>
-            <StarryBackground />
-          </Suspense>
-        )}
+          <Navbar />
 
-        <Navbar />
+          {shouldRender.splashCursor && (
+            <Suspense fallback={null}>
+              {/* <SplashCursor /> */}
+              <CustomCursor />
+            </Suspense>
+          )}
 
-        {shouldRender.splashCursor && (
-          <Suspense fallback={null}>
-            {/* <SplashCursor /> */}
-            <CustomCursor />
-          </Suspense>
-        )}
+          <main className="relative z-10">
+            <Suspense fallback={<div className="h-screen"></div>}>
+              {shouldRender.hero && <Hero />}
+            </Suspense>
 
-        <main className="relative z-10">
+            <Suspense fallback={null}>
+              {shouldRender.about && <About />}
+            </Suspense>
 
-          
-          <Suspense fallback={<div className="h-screen"></div>}>
-            {shouldRender.hero && <Hero />}
-          </Suspense>
+            <Suspense fallback={null}>
+              {shouldRender.experience && <Experience />}
+            </Suspense>
 
-          <Suspense fallback={null}>
-            {shouldRender.about && <About />}
-          </Suspense>
+            <Suspense fallback={null}>
+              {shouldRender.skills && <Skills />}
+            </Suspense>
 
-          <Suspense fallback={null}>
-            {shouldRender.experience && <Experience />}
-          </Suspense>
+            <Suspense fallback={null}>
+              {shouldRender.projects && <Projects />}
+            </Suspense>
 
-          <Suspense fallback={null}>
-            {shouldRender.skills && <Skills />}
-          </Suspense>
+            <Suspense fallback={null}>
+              {shouldRender.contact && <Contact />}
+            </Suspense>
+          </main>
 
-          <Suspense fallback={null}>
-            {shouldRender.projects && <Projects />}
-          </Suspense>
-
-          <Suspense fallback={null}>
-            {shouldRender.contact && <Contact />}
-          </Suspense>
-        </main>
-
-        <Footer />
-      </div>
+          <Footer />
+        </div>
+      )}
     </ThemeProvider>
   );
 };
