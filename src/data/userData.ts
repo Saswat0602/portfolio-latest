@@ -114,20 +114,21 @@ const userData: UserData = {
   Projects: [
     {
       project_name: "Yelp-Camp",
-      code_link: "https://github.com/...",
+      code_link: "https://github.com/Saswat0602/YELP-CAMP-PROJECT.git",
       description: "Yelp-Camp is a comprehensive camping platform built with modern web technologies, showcasing best practices in development and user experience. This project demonstrates skills in responsive design, state management, and API integration.",
       image: "https://images.unsplash.com/photo-1504280390367-361c6d9f38f4?q=80&w=1000&auto=format&fit=crop",
       category: "web",
-      demo_link: "https://example.com/yelp-camp",
       technologies: ["React", "Node.js", "MongoDB", "Express"]
     },
     {
       project_name: "Spotify-Music-App",
-      code_link: "https://github.com/...",
+      code_link: "https://github.com/Saswat0602/spotify-clone",
       description: "Spotify-Music-App is a music streaming application that mimics Spotify's core functionality. The project showcases advanced state management, audio processing, and integration with external APIs.",
       image: "https://images.unsplash.com/photo-1511671782779-c97d3d27a1d4?q=80&w=1000&auto=format&fit=crop",
       category: "web",
-      technologies: ["React", "Redux", "Web Audio API", "CSS"]
+      technologies: ["Next", "Redux", "Web Audio API", "Tailwind CSS", "Supabase"],
+      demo_link: "https://example.com/yelp-camp",
+
     },
     {
       project_name: "Movie-App",
@@ -136,11 +137,12 @@ const userData: UserData = {
       image: "https://images.unsplash.com/photo-1536440136628-849c177e76a1?q=80&w=1000&auto=format&fit=crop",
       category: "web",
       demo_link: "https://example.com/movie-app",
-      technologies: ["React Native", "JavaScript", "API Integration"]
+      technologies: ["React Native", "JavaScript", "API Integration"],
+
     },
     {
       project_name: "Zoom-Clone-App",
-      code_link: "https://github.com/...",
+      code_link: "https://github.com/Saswat0602/zoom-clone",
       description: "Zoom-Clone-App is a real-time video conferencing platform that allows users to create and join meetings, chat, and share screens. This project showcases WebRTC implementation and real-time data handling.",
       image: "https://images.unsplash.com/photo-1609921212029-bb5a28e60960?q=80&w=1000&auto=format&fit=crop",
       category: "web",
@@ -149,7 +151,7 @@ const userData: UserData = {
     },
     {
       project_name: "Note-Taker",
-      code_link: "https://github.com/...",
+      code_link:  "https://github.com/Saswat0602/notebook.git",
       description: "Note-Taker is a minimalist application for creating, organizing, and searching notes. This project demonstrates local storage implementation and responsive UI design.",
       image: "https://images.unsplash.com/photo-1501504905252-473c47e087f8?q=80&w=1000&auto=format&fit=crop",
       category: "app",
@@ -157,7 +159,7 @@ const userData: UserData = {
     },
     {
       project_name: "Food-Ordering-App",
-      code_link: "https://github.com/...",
+      code_link: "https://github.com/Saswat0602/food-website.gethub.io.git",
       description: "Food-Ordering-App allows users to browse restaurants, view menus, and place orders. This project showcases cart functionality, payment integration, and a smooth user experience.",
       image: "https://images.unsplash.com/photo-1565299507177-b0ac66763828?q=80&w=1000&auto=format&fit=crop",
       category: "app",
