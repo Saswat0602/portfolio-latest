@@ -127,7 +127,7 @@ const userData: UserData = {
       image: "https://images.unsplash.com/photo-1511671782779-c97d3d27a1d4?q=80&w=1000&auto=format&fit=crop",
       category: "web",
       technologies: ["Next", "Redux", "Web Audio API", "Tailwind CSS", "Supabase"],
-      demo_link: "https://example.com/yelp-camp",
+      demo_link: "https://spotify-clone-ek3u.vercel.app/",
 
     },
     {
@@ -146,7 +146,7 @@ const userData: UserData = {
       description: "Zoom-Clone-App is a real-time video conferencing platform that allows users to create and join meetings, chat, and share screens. This project showcases WebRTC implementation and real-time data handling.",
       image: "https://images.unsplash.com/photo-1609921212029-bb5a28e60960?q=80&w=1000&auto=format&fit=crop",
       category: "web",
-      demo_link: "https://example.com/zoom-clone",
+      demo_link: "https://zoom-clone-next-ten.vercel.app/",
       technologies: ["WebRTC", "Socket.io", "Node.js", "React"]
     },
     {
