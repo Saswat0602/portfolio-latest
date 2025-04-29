@@ -1,6 +1,6 @@
 import React, { useRef, useEffect, useState, CSSProperties } from "react";
 import { gsap } from "gsap";
-import "../styles/pixelTransition.css"; 
+import "../styles/PixelTransition.css"; 
 
 interface PixelTransitionProps {
   firstContent: React.ReactNode;

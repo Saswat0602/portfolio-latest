@@ -1,7 +1,7 @@
 import React, { lazy, useEffect, useState, Suspense, memo } from 'react';
 import { ThemeProvider } from './context/ThemeContext';
 import Navbar from './components/Navbar';
-import Footer from './components/Footer';
+import Footer from './sections/Footer';
 import CustomCursor from './components/CustomCursor';
 import LoadingScreen from './components/LoadingScreen';
 // import SplashCursor from './reactbits/SplashCursor';

@@ -206,8 +206,8 @@ const userData: UserData = {
     title: "Saswat.dev",
     description: "Junior Software Developer specialized in React, React Native, and Node.js development. Based in Bhubaneswar, Odisha, India.",
     socialLinks: [
-      { href: "#" },
-      { href: "#" },
+      { href: "https://github.com/Saswat0602" },
+      { href: "https://www.linkedin.com/in/saswat0602" },
       { href: "#" },
       { href: "#" },
       { href: "mailto:contact@saswatmohanty.com" }

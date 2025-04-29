@@ -9,7 +9,6 @@ import FormField from '../components/FormField';
 const Contact: React.FC = () => {
   const codeSnippets = useCodeSnippets(true);
 
-
   return (
     <section id="contact" className="py-20 bg-gray-50 dark:bg-slate-900 relative overflow-hidden">
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
@@ -73,23 +72,6 @@ const Contact: React.FC = () => {
                     <h4 className="text-base md:text-lg font-medium text-gray-800 dark:text-white mb-1 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors duration-300">Phone</h4>
                     <p className="text-sm md:text-base text-gray-600 dark:text-gray-300 group-hover:text-gray-800 dark:group-hover:text-gray-200 transition-colors duration-300">{userData.footer.contact.phone}</p>
                   </div>
-                </div>
-              </div>
-
-              <div className="mt-8 md:mt-12">
-                <h4 className="text-base md:text-lg font-medium text-gray-800 dark:text-white mb-4 hover:text-blue-600 dark:hover:text-blue-400 transition-colors duration-300">Follow Me</h4>
-                <div className="flex space-x-4">
-                  {/* Social links - could be replaced with actual icons */}
-                  {userData.footer.socialLinks.slice(0, 3).map((link, index) => (
-                    <a
-                      key={index}
-                      href={link.href}
-                      className="w-10 h-10 bg-gray-200 dark:bg-gray-700 rounded-full flex items-center justify-center text-gray-600 dark:text-gray-300 hover:bg-blue-500 hover:text-white dark:hover:bg-blue-600 transition-all duration-300 transform hover:scale-110 hover:rotate-6 hover:shadow-lg"
-                      aria-label={`Social link ${index + 1}`}
-                    >
-                      {index === 0 ? "Li" : index === 1 ? "Gh" : "Tw"}
-                    </a>
-                  ))}
                 </div>
               </div>
             </div>
