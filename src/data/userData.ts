@@ -109,7 +109,7 @@ const userData: UserData = {
     description: "I'm a Software Development Engineer (SDE 1) at HyScaler, specializing in React, React Native, and Node.js. With a Master's in Computer Applications,",
     description2: "I focus on building responsive UIs and backend solutions. I'm passionate about continuous learning and keeping up with industry trends..",
     location: "Bhubaneswar, Odisha, India",
-    email: "contact@saswatmohanty.com"
+    email: "saswatranjan0602@gmail.com"
   },
   Projects: [
     {
@@ -200,7 +200,7 @@ const userData: UserData = {
     }
   ],
   contact: {
-    message: "Feel free to contact with me. Let's Talk. Don't wish for it! Work for it!"
+    message: "Feel free to contact with me. Let's Talk."
   },
   footer: {
     title: "Saswat.dev",
