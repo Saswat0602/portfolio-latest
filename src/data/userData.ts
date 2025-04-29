@@ -185,7 +185,7 @@ const userData: UserData = {
       location: "Bhubaneswar, Odisha, India · On-site",
       type: "Full-time",
       description: "Working on Django REST Framework, React Native, and developing multiple web and mobile applications.",
-      skills: ["Django REST Framework", "React Native", "+5 skills"],
+      skills: ["Django REST Framework", "React Native", "Redux-toolkit", "Tailwind CSS","Three.js" , "Socket.io","PostgreSQL","Sqlite"],
       logo: "/path_to_logo_image"
     },
     {
@@ -195,7 +195,7 @@ const userData: UserData = {
       location: "Bhubaneswar, Odisha, India · On-site",
       type: "Trainee",
       description: "Gaining hands-on experience in React.js, React Native, and other web technologies.",
-      skills: ["React.js", "React Native", "+4 skills"],
+      skills: ["React.js", "React Native", "Laravel", "Pament Gateway" ,"Ruby on Rails","Node.js", "Express.js", "MongoDB"],
       logo: "/path_to_logo_image"
     }
   ],

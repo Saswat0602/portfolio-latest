@@ -77,10 +77,6 @@ const Projects: React.FC = () => {
     }
   };
 
-  // For debugging
-  console.log('Active filter:', activeFilter);
-  console.log('Available categories:', categories);
-  console.log('Number of filtered projects:', filteredProjects.length);
 
   return (
     <section id="projects" className="py-20 bg-gray-50 dark:bg-slate-900 overflow-hidden">
