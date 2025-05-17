@@ -44,8 +44,8 @@ const Hero: React.FC<HeroProps> = ({ isMobile }) => {
   const codeSnippets = useCodeSnippets(isClientSide,true);
   const particles = useParticles(isClientSide, theme);
   
-  // Setup mouse parallax effect
-  useMouseParallax(isClientSide, containerRef);
+  // Setup mouse parallax effect only on desktop
+  if (!isMobile) useMouseParallax(isClientSide, containerRef);
   
   const scrollToProjects = () => {
     const projectsSection = document.getElementById('projects');
@@ -112,9 +112,7 @@ const Hero: React.FC<HeroProps> = ({ isMobile }) => {
           {codeSnippets}
         </div>
       )}
-
-      
-      {/* Animated background elements */}
+      {/* Animated background elements only on desktop */}
       {!isMobile && (
         <div className="absolute inset-0 overflow-hidden">
           <div 
@@ -129,7 +127,6 @@ const Hero: React.FC<HeroProps> = ({ isMobile }) => {
           {particles}
         </div>
       )}
-
       <div className="container mx-auto px-4 z-10">
         <div className="flex flex-col-reverse md:flex-row items-center">
           {/* Text content */}
@@ -161,7 +158,6 @@ const Hero: React.FC<HeroProps> = ({ isMobile }) => {
             </AnimatedSection>
           </div>
           
-          {/* Right side - Laptop animation */}
           <div className="flex-1 md:pl-8 flex justify-center">
             <LaptopAnimation />
           </div>

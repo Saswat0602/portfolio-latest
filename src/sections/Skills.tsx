@@ -128,49 +128,75 @@ const Skills: React.FC<SkillsProps> = ({ isMobile }) => {
 
   return (
     <section id="skills" className="py-20 bg-gray-50 dark:bg-slate-900 overflow-hidden relative">
-      <BackgroundElements />
-
+      {/* Only show BackgroundElements on desktop */}
+      {!isMobile && <BackgroundElements />}
       <div className="container mx-auto px-4 relative z-10">
         <AnimatedSection className="mb-16 text-center">
           <h2 className="section-heading text-gray-800 dark:text-white hover:text-blue-600 dark:hover:text-blue-400 transition-colors duration-300 relative inline-block group">
             Skills & Technologies
             <span className="absolute -bottom-2 left-0 w-0 h-1 bg-blue-600 dark:bg-blue-400 group-hover:w-full transition-all duration-500"></span>
           </h2>
-          <motion.p
-            className="text-gray-600 dark:text-gray-300 max-w-2xl mx-auto mt-4 hover:text-gray-800 dark:hover:text-white transition-colors duration-300"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ duration: 0.5, delay: 0.3 }}
-          >
-            My technical toolkit that I've developed and continue to expand through projects and continuous learning
-          </motion.p>
-        </AnimatedSection>
-
-        <motion.div
-          className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 relative z-10"
-          variants={containerVariants}
-          initial="hidden"
-          animate="show"
-        >
-          {displayedCategories.map((category, index) => (
-            <motion.div
-              key={category.title}
-              className="h-full"
-              variants={itemVariants}
-              custom={index}
-              whileHover={{ scale: 1.02 }}
+          {!isMobile && (
+            <motion.p
+              className="text-gray-600 dark:text-gray-300 max-w-2xl mx-auto mt-4 hover:text-gray-800 dark:hover:text-white transition-colors duration-300"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ duration: 0.5, delay: 0.3 }}
             >
-              <SkillCategory
-                title={category.title}
-                icon={category.icon}
-                skills={category.skills}
-                color={category.color}
-                delay={index * 0.1}
-              />
-            </motion.div>
-          ))}
-        </motion.div>
-
+              My technical toolkit that I've developed and continue to expand through projects and continuous learning
+            </motion.p>
+          )}
+          {isMobile && (
+            <p className="text-gray-600 dark:text-gray-300 max-w-2xl mx-auto mt-4">
+              My technical toolkit that I've developed and continue to expand through projects and continuous learning
+            </p>
+          )}
+        </AnimatedSection>
+        {/* Mobile: simple list, no overlays/hover, minimal DOM */}
+        {isMobile ? (
+          <div className="grid grid-cols-1 gap-6">
+            {displayedCategories.map((category, index) => (
+              <div key={category.title} className="bg-white dark:bg-gray-800 rounded-xl shadow-md p-4">
+                <div className="flex items-center mb-2">
+                  <span className={`text-2xl mr-2 ${category.color}`}>{category.icon}</span>
+                  <span className="font-semibold text-lg text-gray-800 dark:text-white">{category.title}</span>
+                </div>
+                <div className="flex flex-wrap gap-2">
+                  {category.skills.slice(0, 4).map((skill, i) => (
+                    <span key={i} className="px-2 py-1 text-xs rounded-md bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300">
+                      {skill.name}
+                    </span>
+                  ))}
+                </div>
+              </div>
+            ))}
+          </div>
+        ) : (
+          <motion.div
+            className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 relative z-10"
+            variants={containerVariants}
+            initial="hidden"
+            animate="show"
+          >
+            {displayedCategories.map((category, index) => (
+              <motion.div
+                key={category.title}
+                className="h-full"
+                variants={itemVariants}
+                custom={index}
+                whileHover={{ scale: 1.02 }}
+              >
+                <SkillCategory
+                  title={category.title}
+                  icon={category.icon}
+                  skills={category.skills}
+                  color={category.color}
+                  delay={index * 0.1}
+                />
+              </motion.div>
+            ))}
+          </motion.div>
+        )}
         {/* Show More button for mobile */}
         {isMobile && !showAll && skillCategories.length > 3 && (
           <div className="flex justify-center mt-6">

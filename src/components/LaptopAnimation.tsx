@@ -10,7 +10,8 @@ const LaptopAnimation: React.FC = () => {
   // Reduced array of tech words for better performance
   const techWords = [
     'React', 'TypeScript', 'Node.js', 'JavaScript',
-    'HTML5', 'CSS3', 'Tailwind', 'Next.js'
+    'React-Native', 'Tailwind', 'Next.js','Docker', 'MongoDB', 'PostgreSQL',
+    'Express', 'Redux-tollkit', , 'Framer-Motion', 'Three.js',
   ];
   
   // Track if laptop is in viewport for animations
