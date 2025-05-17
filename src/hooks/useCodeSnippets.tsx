@@ -17,49 +17,49 @@ const getRandomGradient = () => {
 
 
 export const useCodeSnippets = (isClientSide: boolean, isHero?: boolean) => {
-    const [codeSnippets, setCodeSnippets] = useState<React.ReactNode[]>([]);
-  
-    const codeExamples = isHero ? [realHeroCode1, realHeroCode2] : [realHeroCode1];
-    const snippetCount = 10; // Number of floating snippets on screen
-  
-    const widthMin = 150;
-    const widthMax = 450;
-    const fontSizeMin = 8;
-    const fontSizeMax = 10;
-  
-    useEffect(() => {
-      if (!isClientSide) return;
-  
-      const snippets: React.ReactNode[] = [];
-  
-      for (let i = 0; i < snippetCount; i++) {
-        const left = Math.random() * 90; 
-        const top = Math.random() * 100;
-  
-        const opacity = 0.2 + Math.random() * 0.15;
-        const width = widthMin + Math.random() * (widthMax - widthMin);
-        const fontSize = fontSizeMin + Math.random() * (fontSizeMax - fontSizeMin);
-        const code = codeExamples[i % codeExamples.length];
-        const gradient = getRandomGradient();
+  const [codeSnippets, setCodeSnippets] = useState<React.ReactNode[]>([]);
 
-        snippets.push(
-          <RealCodeSnippet
-            key={`snippet-${i}`}
-            code={code}
-            opacity={opacity}
-            top={top}
-            left={left}
-            width={width}
-            fontSize={fontSize}
-            gradient={gradient}
+  const codeExamples = isHero ? [realHeroCode1, realHeroCode2] : [realHeroCode1];
 
-          />
-        );
-      }
-  
-      setCodeSnippets(snippets);
-    }, [isClientSide]);
-  
-    return codeSnippets;
-  };
-  
+  const widthMin = 150;
+  const widthMax = 450;
+  const fontSizeMin = 8;
+  const fontSizeMax = 10;
+
+  useEffect(() => {
+    if (!isClientSide) return;
+
+    const isMobile = window.innerWidth <= 768;
+    const snippetCount = isMobile ? 4 : 10;
+
+    const snippets: React.ReactNode[] = [];
+
+    for (let i = 0; i < snippetCount; i++) {
+      const left = Math.random() * 90;
+      const top = Math.random() * 100;
+
+      const opacity = 0.2 + Math.random() * 0.15;
+      const width = widthMin + Math.random() * (widthMax - widthMin);
+      const fontSize = fontSizeMin + Math.random() * (fontSizeMax - fontSizeMin);
+      const code = codeExamples[i % codeExamples.length];
+      const gradient = getRandomGradient();
+
+      snippets.push(
+        <RealCodeSnippet
+          key={`snippet-${i}`}
+          code={code}
+          opacity={opacity}
+          top={top}
+          left={left}
+          width={width}
+          fontSize={fontSize}
+          gradient={gradient}
+        />
+      );
+    }
+
+    setCodeSnippets(snippets);
+  }, [isClientSide, isHero]);
+
+  return codeSnippets;
+};
