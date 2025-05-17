@@ -155,7 +155,7 @@ const Skills: React.FC<SkillsProps> = ({ isMobile }) => {
         {/* Mobile: simple list, no overlays/hover, minimal DOM */}
         {isMobile ? (
           <div className="grid grid-cols-1 gap-6">
-            {displayedCategories.map((category, index) => (
+            {displayedCategories.map((category) => (
               <div key={category.title} className="bg-white dark:bg-gray-800 rounded-xl shadow-md p-4">
                 <div className="flex items-center mb-2">
                   <span className={`text-2xl mr-2 ${category.color}`}>{category.icon}</span>
