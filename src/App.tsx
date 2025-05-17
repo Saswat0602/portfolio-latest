@@ -6,7 +6,7 @@ import CustomCursor from './components/CustomCursor';
 import LoadingScreen from './components/LoadingScreen';
 // import SplashCursor from './reactbits/SplashCursor';
 
-const StarryBackground = lazy(() => import('./components/StarryBackground'));
+// const StarryBackground = lazy(() => import('./components/StarryBackground'));
 const Hero = lazy(() => import('./sections/Hero'));
 const About = lazy(() => import('./sections/About'));
 const Experience = lazy(() => import('./sections/Experience'));
@@ -85,20 +85,19 @@ const App: React.FC = () => {
         <LoadingScreen finishLoading={() => setIsLoading(false)} />
       ) : (
         <div className="relative min-h-screen bg-gray-50 dark:bg-slate-900 transition-colors dark-transition">
-          {shouldRender.background && (
+          {/* {shouldRender.background && (
             <Suspense fallback={null}>
               <StarryBackground />
             </Suspense>
-          )}
+          )} */}
 
           <Navbar />
 
-          {shouldRender.splashCursor && (
+          {/* {shouldRender.splashCursor && (
             <Suspense fallback={null}>
-              {/* <SplashCursor/> */}
               <CustomCursor />
             </Suspense>
-          )}
+          )} */}
 
           <main className="relative z-10">
             <Suspense fallback={<div className="h-screen"></div>}>

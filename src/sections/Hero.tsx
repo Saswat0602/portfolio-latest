@@ -1,10 +1,9 @@
-import React, { useRef, lazy, Suspense, useMemo } from 'react';
+import React, { useRef, useMemo } from 'react';
 import { FiGithub, FiLinkedin, FiMail } from 'react-icons/fi';
 import AnimatedSection from '../components/AnimatedSection';
 import TextAnimation from '../components/TextAnimation';
 import { useTheme } from '../hooks/useTheme';
 import LaptopAnimation from '../components/LaptopAnimation';
-const MatrixCodeRain = lazy(() => import('../components/MatrixCodeRain'));
 import userData from '../data/userData';
 import { useClientSideEffects, useMouseParallax } from '../hooks/useHeroHooks';
 import { useCodeSnippets } from '../hooks/useCodeSnippets';
@@ -40,7 +39,7 @@ const useParticles = (isClientSide: boolean, theme: string, count: number = 8) =
 const Hero: React.FC = () => {
   const { theme } = useTheme();
   const containerRef = useRef<HTMLDivElement>(null);
-  const { isClientSide, showMatrixRain } = useClientSideEffects();
+  const { isClientSide } = useClientSideEffects();
   const codeSnippets = useCodeSnippets(isClientSide,true);
   const particles = useParticles(isClientSide, theme);
   
@@ -107,19 +106,12 @@ const Hero: React.FC = () => {
       ref={containerRef}
       className="relative h-screen flex items-center justify-center overflow-hidden bg-gray-50 dark:bg-slate-900 dark:text-white reveal-on-theme-change"
     >
-      {/* Code background */}
       {isClientSide && (
         <div className="absolute inset-0 overflow-hidden pointer-events-none">
           {codeSnippets}
         </div>
       )}
-      
-      {/* Matrix Code Rain - lazy loaded */}
-      {isClientSide && showMatrixRain && theme === 'dark' && (
-        <Suspense fallback={null}>
-          <MatrixCodeRain speed={0.8} opacity={0.15} />
-        </Suspense>
-      )}
+
       
       {/* Animated background elements */}
       <div className="absolute inset-0 overflow-hidden">
