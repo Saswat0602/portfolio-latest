@@ -1,6 +1,6 @@
 import { FiSend } from 'react-icons/fi'
-import AnimatedSection from './AnimatedSection'
 import { useState } from 'react'
+import AnimatedSection from '../components/AnimatedSection';
 
 const FormField: React.FC = () => {
     const [formData, setFormData] = useState({
@@ -24,6 +24,14 @@ const FormField: React.FC = () => {
         e.preventDefault();
         setIsSubmitting(true);
 
+        const token = (window as any).grecaptcha?.getResponse();
+
+        if (!token) {
+            alert("Please complete the CAPTCHA.");
+            setIsSubmitting(false);
+            return;
+        }
+
         try {
             const response = await fetch("https://formspree.io/f/xrbqjyby", {
                 method: "POST",
@@ -33,6 +41,7 @@ const FormField: React.FC = () => {
                 },
                 body: JSON.stringify({
                     ...formData,
+                    'g-recaptcha-response': token,
                     _gotcha: '', // honeypot
                 }),
             });
@@ -45,6 +54,7 @@ const FormField: React.FC = () => {
                     subject: '',
                     message: '',
                 });
+                (window as any).grecaptcha?.reset();
             } else {
                 alert("Failed to send message. Please try again.");
             }
@@ -100,6 +110,14 @@ const FormField: React.FC = () => {
                         {/* Honeypot field */}
                         <input type="text" name="_gotcha" className="hidden" tabIndex={-1} autoComplete="off" />
 
+                        {/* reCAPTCHA */}
+                        {/* <div className="g-recaptcha" data-sitekey="YOUR_SITE_KEY_HERE"></div> */}
+                        <div
+                            className="g-recaptcha"
+                            data-sitekey="6Lem6J0rAAAAAEpCm1KdwtH05lpw9vkucKd0xgVm"
+                        ></div>
+
+
                         <button type="submit" disabled={isSubmitting} className={`w-full sm:w-auto px-6 md:px-8 py-2 md:py-3 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-full transition-all duration-300 transform hover:-translate-y-1 hover:shadow-lg flex items-center justify-center relative overflow-hidden group ${isSubmitting ? 'opacity-70 cursor-not-allowed' : ''}`}>
                             <span className="absolute inset-0 w-full h-full bg-gradient-to-r from-blue-600 to-blue-600 group-hover:from-blue-600 group-hover:via-purple-600 group-hover:to-blue-600 transition-all duration-1000 ease-in-out bg-size-200 bg-pos-0 group-hover:bg-pos-100"></span>
                             <span className="relative z-10 flex items-center">
@@ -125,4 +143,4 @@ const FormField: React.FC = () => {
     )
 }
 
-export default FormField;
+export default FormField
