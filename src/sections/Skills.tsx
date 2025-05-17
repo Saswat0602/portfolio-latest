@@ -1,4 +1,4 @@
-import React, { useMemo } from 'react';
+import React, { useMemo, useState } from 'react';
 import AnimatedSection from '../components/AnimatedSection';
 import {
   SiReact, SiNodedotjs, SiMongodb, SiJavascript, SiCss3, SiHtml5,
@@ -39,7 +39,13 @@ const itemVariants = {
 
 SkillCategory.displayName = 'SkillCategory';
 
-const Skills: React.FC = () => {
+interface SkillsProps {
+  isMobile?: boolean;
+}
+
+const Skills: React.FC<SkillsProps> = ({ isMobile }) => {
+  const [showAll, setShowAll] = useState(false);
+
   const skillIcons = useMemo(() => ({
     "HTML": <SiHtml5 />,
     "CSS": <SiCss3 />,
@@ -117,6 +123,9 @@ const Skills: React.FC = () => {
     ].filter(category => category.skills.length > 0);
   }, [skillIcons]);
 
+  // Limit categories for mobile
+  const displayedCategories = isMobile && !showAll ? skillCategories.slice(0, 3) : skillCategories;
+
   return (
     <section id="skills" className="py-20 bg-gray-50 dark:bg-slate-900 overflow-hidden relative">
       <BackgroundElements />
@@ -143,7 +152,7 @@ const Skills: React.FC = () => {
           initial="hidden"
           animate="show"
         >
-          {skillCategories.map((category, index) => (
+          {displayedCategories.map((category, index) => (
             <motion.div
               key={category.title}
               className="h-full"
@@ -161,6 +170,18 @@ const Skills: React.FC = () => {
             </motion.div>
           ))}
         </motion.div>
+
+        {/* Show More button for mobile */}
+        {isMobile && !showAll && skillCategories.length > 3 && (
+          <div className="flex justify-center mt-6">
+            <button
+              className="px-6 py-2 bg-blue-600 text-white rounded-lg shadow hover:bg-blue-700 transition-all"
+              onClick={() => setShowAll(true)}
+            >
+              Show More
+            </button>
+          </div>
+        )}
       </div>
     </section>
   );

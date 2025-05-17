@@ -8,8 +8,9 @@ import userData from '../data/userData';
 import { useClientSideEffects, useMouseParallax } from '../hooks/useHeroHooks';
 import { useCodeSnippets } from '../hooks/useCodeSnippets';
 
-
-
+interface HeroProps {
+  isMobile?: boolean;
+}
 
 const useParticles = (isClientSide: boolean, theme: string, count: number = 8) => {
   return useMemo(() => {
@@ -36,7 +37,7 @@ const useParticles = (isClientSide: boolean, theme: string, count: number = 8) =
   }, [isClientSide, theme, count]);
 };
 
-const Hero: React.FC = () => {
+const Hero: React.FC<HeroProps> = ({ isMobile }) => {
   const { theme } = useTheme();
   const containerRef = useRef<HTMLDivElement>(null);
   const { isClientSide } = useClientSideEffects();
@@ -114,18 +115,20 @@ const Hero: React.FC = () => {
 
       
       {/* Animated background elements */}
-      <div className="absolute inset-0 overflow-hidden">
-        <div 
-          className="floating-blob absolute top-1/4 -left-20 w-80 h-80 bg-purple-300 dark:bg-purple-900 rounded-full mix-blend-multiply filter blur-3xl opacity-40 animate-float reveal-on-theme-change"
-          data-speed="0.05"
-        ></div>
-        <div 
-          className="floating-blob absolute top-3/4 -right-20 w-96 h-96 bg-blue-300 dark:bg-blue-900 rounded-full mix-blend-multiply filter blur-3xl opacity-40 animate-float reveal-on-theme-change" 
-          style={{ animationDelay: '2s' }}
-          data-speed="0.08"
-        ></div>
-        {particles}
-      </div>
+      {!isMobile && (
+        <div className="absolute inset-0 overflow-hidden">
+          <div 
+            className="floating-blob absolute top-1/4 -left-20 w-80 h-80 bg-purple-300 dark:bg-purple-900 rounded-full mix-blend-multiply filter blur-3xl opacity-40 animate-float reveal-on-theme-change"
+            data-speed="0.05"
+          ></div>
+          <div 
+            className="floating-blob absolute top-3/4 -right-20 w-96 h-96 bg-blue-300 dark:bg-blue-900 rounded-full mix-blend-multiply filter blur-3xl opacity-40 animate-float reveal-on-theme-change" 
+            style={{ animationDelay: '2s' }}
+            data-speed="0.08"
+          ></div>
+          {particles}
+        </div>
+      )}
 
       <div className="container mx-auto px-4 z-10">
         <div className="flex flex-col-reverse md:flex-row items-center">

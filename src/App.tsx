@@ -21,6 +21,8 @@ const PRIORITY = {
   LOW: 3
 };
 
+const isMobile = typeof window !== 'undefined' && window.innerWidth < 768;
+
 const App: React.FC = () => {
   const [loadingStage, setLoadingStage] = useState(PRIORITY.CRITICAL);
   const [isLoading, setIsLoading] = useState(true);
@@ -85,7 +87,8 @@ const App: React.FC = () => {
         <LoadingScreen finishLoading={() => setIsLoading(false)} />
       ) : (
         <div className="relative min-h-screen bg-gray-50 dark:bg-slate-900 transition-colors dark-transition">
-          {/* {shouldRender.background && (
+          {/* Only render heavy backgrounds/animations on desktop */}
+          {/* {shouldRender.background && !isMobile && (
             <Suspense fallback={null}>
               <StarryBackground />
             </Suspense>
@@ -93,7 +96,7 @@ const App: React.FC = () => {
 
           <Navbar />
 
-          {/* {shouldRender.splashCursor && (
+          {/* {shouldRender.splashCursor && !isMobile && (
             <Suspense fallback={null}>
               <CustomCursor />
             </Suspense>
@@ -101,7 +104,7 @@ const App: React.FC = () => {
 
           <main className="relative z-10">
             <Suspense fallback={<div className="h-screen"></div>}>
-              {shouldRender.hero && <Hero />}
+              {shouldRender.hero && <Hero isMobile={isMobile} />}
             </Suspense>
 
             <Suspense fallback={null}>
@@ -113,11 +116,11 @@ const App: React.FC = () => {
             </Suspense>
 
             <Suspense fallback={null}>
-              {shouldRender.skills && <Skills />}
+              {shouldRender.skills && <Skills isMobile={isMobile} />}
             </Suspense>
 
             <Suspense fallback={null}>
-              {shouldRender.projects && <Projects />}
+              {shouldRender.projects && <Projects isMobile={isMobile} />}
             </Suspense>
 
             <Suspense fallback={null}>

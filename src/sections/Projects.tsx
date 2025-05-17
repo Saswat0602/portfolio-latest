@@ -15,10 +15,15 @@ interface ProjectItem {
   technologies: string[];
 }
 
-const Projects: React.FC = () => {
+interface ProjectsProps {
+  isMobile?: boolean;
+}
+
+const Projects: React.FC<ProjectsProps> = ({ isMobile }) => {
   const [activeFilter, setActiveFilter] = useState('all');
   const [filteredProjects, setFilteredProjects] = useState<ProjectItem[]>([]);
   const prefersReducedMotion = useReducedMotion();
+  const [showAll, setShowAll] = useState(false);
 
   // Transform userData.Projects to the format needed by the component (only once)
   const projects: ProjectItem[] = useMemo(() => {
@@ -77,6 +82,8 @@ const Projects: React.FC = () => {
     }
   };
 
+  // Limit projects for mobile
+  const displayedProjects = isMobile && !showAll ? filteredProjects.slice(0, 3) : filteredProjects;
 
   return (
     <section id="projects" className="py-20 bg-gray-50 dark:bg-slate-900 overflow-hidden">
@@ -104,7 +111,7 @@ const Projects: React.FC = () => {
           ))}
         </div>
 
-        {filteredProjects.length > 0 ? (
+        {displayedProjects.length > 0 ? (
           <motion.div 
             key={activeFilter} // Add key to force re-render when filter changes
             className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8"
@@ -113,7 +120,7 @@ const Projects: React.FC = () => {
             animate="visible" // Changed from whileInView to ensure it animates when filter changes
             viewport={{ once: true, margin: "-100px" }}
           >
-            {filteredProjects.map((project) => (
+            {displayedProjects.map((project) => (
               <motion.div
                 key={project.title}
                 className="group bg-white dark:bg-gray-800 rounded-xl overflow-hidden shadow-md"
@@ -126,6 +133,8 @@ const Projects: React.FC = () => {
                 <div className="relative h-56 overflow-hidden">
                   <img 
                     src={project.image} 
+                    srcSet={`${project.image.replace(/\.(jpg|png)$/, '.webp')} 600w, ${project.image} 1200w`}
+                    sizes="(max-width: 600px) 100vw, 33vw"
                     alt={project.title}
                     className="w-full h-full object-cover transition-all duration-300 group-hover:scale-105"
                     loading="lazy"
@@ -205,6 +214,18 @@ const Projects: React.FC = () => {
         ) : (
           <div className="text-center py-12">
             <p className="text-gray-600 dark:text-gray-300">No projects found for this category.</p>
+          </div>
+        )}
+
+        {/* Show More button for mobile */}
+        {isMobile && !showAll && filteredProjects.length > 3 && (
+          <div className="flex justify-center mt-6">
+            <button
+              className="px-6 py-2 bg-blue-600 text-white rounded-lg shadow hover:bg-blue-700 transition-all"
+              onClick={() => setShowAll(true)}
+            >
+              Show More
+            </button>
           </div>
         )}
       </div>
