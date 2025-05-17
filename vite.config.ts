@@ -1,5 +1,6 @@
-import { defineConfig } from 'vite'
-import react from '@vitejs/plugin-react'
+import { defineConfig } from 'vite';
+import react from '@vitejs/plugin-react';
+import type { UserConfig } from 'vite';
 
 // https://vite.dev/config/
 export default defineConfig({
@@ -13,16 +14,12 @@ export default defineConfig({
     extensions: ['.js', '.jsx', '.ts', '.tsx', '.css']
   },
   build: {
-    minify: 'terser',
-    terserOptions: {
-      compress: {
-        drop_console: true,
-        drop_debugger: true,
-        pure_funcs: ['console.info', 'console.debug', 'console.warn'],
-      },
-      format: {
-        comments: false,
-      },
+    minify: 'esbuild',
+    sourcemap: false,
+    chunkSizeWarningLimit: 500,
+    esbuild: {
+      drop: ['console', 'debugger'],
+      pure: ['console.info', 'console.debug', 'console.warn', 'console.log']
     },
     rollupOptions: {
       output: {
@@ -33,7 +30,5 @@ export default defineConfig({
         },
       },
     },
-    sourcemap: false,
-    chunkSizeWarningLimit: 500,
   },
-})
+} as UserConfig);
