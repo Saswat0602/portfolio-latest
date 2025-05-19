@@ -30,7 +30,7 @@ export const useCodeSnippets = (isClientSide: boolean, isHero?: boolean) => {
     if (!isClientSide) return;
 
     const isMobile = window.innerWidth <= 768;
-    const snippetCount = isMobile ? 2 : 5;
+    const snippetCount = isMobile ? 2 : 4;
 
     const snippets: React.ReactNode[] = [];
 

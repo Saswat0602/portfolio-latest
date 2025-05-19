@@ -1,4 +1,4 @@
-import { lazy, useEffect, useState, Suspense, memo } from 'react';
+import { lazy, useEffect, useState, Suspense, memo, useMemo } from 'react';
 import { ThemeProvider } from './context/ThemeContext';
 import Navbar from './components/Navbar';
 import Footer from './sections/Footer';
@@ -24,139 +24,126 @@ const PRIORITY = {
 const App = () => {
   const [loadingStage, setLoadingStage] = useState(PRIORITY.CRITICAL);
   const [isLoading, setIsLoading] = useState(true);
-  const [isMobile, setIsMobile] = useState(false);
+  const [isMobile, setIsMobile] = useState(window.innerWidth < 768);
   const [componentsReady, setComponentsReady] = useState(false);
+  const [fadeOutLoading, setFadeOutLoading] = useState(false);
+  const [mainVisible, setMainVisible] = useState(false);
 
-  // Set mobile state once on mount
+  // Combine background color and resize/preload logic
   useEffect(() => {
-    setIsMobile(window.innerWidth < 768);
-    
-    // Add resize listener for orientation changes
-    const handleResize = () => {
-      setIsMobile(window.innerWidth < 768);
-    };
-    
+    document.body.style.backgroundColor = '#f8fafc';
+    document.body.classList.add('transition-colors');
+    const handleResize = () => setIsMobile(window.innerWidth < 768);
     window.addEventListener('resize', handleResize);
-    return () => window.removeEventListener('resize', handleResize);
-  }, []);
-
-  // Preload critical components and handle loading stages
-  useEffect(() => {
-    // Preload components in order of priority
-    const preloadComponents = async () => {
+    // Preload critical components
+    const preload = async () => {
       try {
-        // Preload critical components first
         await Promise.all([
           import('./sections/Hero'),
           import('./sections/About')
         ]);
         setComponentsReady(true);
-        
-        // Then preload other components
-        Promise.all([
-          import('./sections/Experience'),
-          import('./sections/Skills'),
-          import('./sections/Projects'),
-          import('./sections/Contact')
-        ]);
-      } catch (error) {
-        console.error('Error preloading components:', error);
-        // Still mark components as ready even if there's an error to prevent endless loading
+        setTimeout(() => {
+          import('./sections/Experience');
+          import('./sections/Skills');
+          import('./sections/Projects');
+          import('./sections/Contact');
+        }, 0);
+      } catch {
         setComponentsReady(true);
       }
     };
-    
-    preloadComponents();
+    preload();
+    return () => {
+      document.body.style.backgroundColor = '';
+      document.body.classList.remove('transition-colors');
+      window.removeEventListener('resize', handleResize);
+    };
   }, []);
 
-  // Progressive loading stage management
+  // Loading stage management
   useEffect(() => {
     if (loadingStage === PRIORITY.CRITICAL) {
-      // Start loading immediately
-      requestAnimationFrame(() => {
-        setLoadingStage(PRIORITY.HIGH);
-      });
+      requestAnimationFrame(() => setLoadingStage(PRIORITY.HIGH));
     } else if (loadingStage < PRIORITY.LOW) {
-      // Progress through loading stages with increasing delays
-      const timer = setTimeout(() => {
-        setLoadingStage(prevStage => prevStage + 1);
-      }, loadingStage * 150);
-      
+      const timer = setTimeout(() => setLoadingStage(prev => prev + 1), loadingStage * 150);
       return () => clearTimeout(timer);
     }
   }, [loadingStage]);
 
-  // Handle loading completion
+  // Handle loading completion with fade out
   const handleFinishLoading = () => {
-    // Only finish loading if critical components are ready
     if (componentsReady) {
-      setIsLoading(false);
+      setFadeOutLoading(true);
+      setTimeout(() => setIsLoading(false), 400);
     } else {
-      // If components aren't ready yet, wait a bit and check again
       const checkReadyInterval = setInterval(() => {
         if (componentsReady) {
-          setIsLoading(false);
+          setFadeOutLoading(true);
+          setTimeout(() => setIsLoading(false), 400);
           clearInterval(checkReadyInterval);
         }
       }, 100);
-      
-      // Safety timeout to prevent infinite loading
       setTimeout(() => {
         clearInterval(checkReadyInterval);
-        setIsLoading(false);
-      }, 3000);
+        setFadeOutLoading(true);
+        setTimeout(() => setIsLoading(false), 400);
+      }, 2000);
     }
   };
 
-  // Determine which components should render based on loading stage
-  const shouldRender = {
+  // Memoize shouldRender
+  const shouldRender = useMemo(() => ({
     hero: loadingStage >= PRIORITY.HIGH,
     about: loadingStage >= PRIORITY.HIGH,
     experience: loadingStage >= PRIORITY.MEDIUM,
     skills: loadingStage >= PRIORITY.MEDIUM,
     projects: loadingStage >= PRIORITY.MEDIUM,
     contact: loadingStage >= PRIORITY.LOW
-  };
+  }), [loadingStage]);
+
+  // Show main content and footer together after loading
+  useEffect(() => {
+    if (!isLoading) {
+      setTimeout(() => setMainVisible(true), 50); // slight delay for fade
+    } else {
+      setMainVisible(false);
+    }
+  }, [isLoading]);
 
   return (
     <ThemeProvider>
-      {isLoading ? (
-        <LoadingScreen finishLoading={handleFinishLoading} />
-      ) : (
-        <div className="relative min-h-screen bg-gray-50 dark:bg-slate-900 transition-colors dark-transition">
-          <Navbar />
-
-          <main className="relative z-10">
-            <Suspense fallback={<div className="h-screen flex items-center justify-center">
-              <div className="w-10 h-10 border-4 border-blue-500 border-t-transparent rounded-full animate-spin"></div>
-            </div>}>
+      <main className="relative min-h-screen bg-gray-50 dark:bg-slate-900 transition-colors dark-transition">
+        {isLoading && (
+          <div className={`fixed inset-0 z-[9999] flex items-center justify-center bg-gray-50 dark:bg-slate-900 transition-opacity duration-400 ${fadeOutLoading ? 'opacity-0 pointer-events-none' : 'opacity-100'}`}>
+            <LoadingScreen finishLoading={handleFinishLoading} />
+          </div>
+        )}
+        {!isLoading && (
+          <div className={`transition-opacity duration-500 ${mainVisible ? 'opacity-100' : 'opacity-0'}`}>
+            <Navbar />
+            <Suspense fallback={<div className="h-16 flex items-center justify-center"><div className="w-6 h-6 border-2 border-blue-500 border-t-transparent rounded-full animate-spin"></div></div>}>
               {shouldRender.hero && <Hero isMobile={isMobile} />}
             </Suspense>
-
-            <Suspense fallback={<div className="h-32"></div>}>
+            <Suspense fallback={<div className="h-8"></div>}>
               {shouldRender.about && <About />}
             </Suspense>
-
-            <Suspense fallback={<div className="h-32"></div>}>
+            <Suspense fallback={<div className="h-8"></div>}>
               {shouldRender.experience && <Experience />}
             </Suspense>
-
-            <Suspense fallback={<div className="h-32"></div>}>
+            <Suspense fallback={<div className="h-8"></div>}>
               {shouldRender.skills && <Skills isMobile={isMobile} />}
             </Suspense>
-
-            <Suspense fallback={<div className="h-32"></div>}>
+            <Suspense fallback={<div className="h-8"></div>}>
               {shouldRender.projects && <Projects isMobile={isMobile} />}
             </Suspense>
-
-            <Suspense fallback={<div className="h-32"></div>}>
+            <Suspense fallback={<div className="h-8"></div>}>
               {shouldRender.contact && <Contact />}
             </Suspense>
-          </main>
-
-          <Footer />
-        </div>
-      )}
+            <Footer />
+          </div>
+        )}
+      </main>
     </ThemeProvider>
   );
 };
