@@ -20,10 +20,14 @@
   padding: 0;
   box-sizing: border-box;
   scroll-behavior: smooth;
+  transition: background-color 0.3s ease-in-out,
+              color 0.3s ease-in-out,
+              border-color 0.3s ease-in-out,
+              box-shadow 0.3s ease-in-out;
 }
 
 body {
-  transition: background-color 0.3s ease;
+  transition: background-color 0.3s ease-in-out;
 }
 
 /* Scrollbar Styles */

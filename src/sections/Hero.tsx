@@ -112,7 +112,6 @@ const Hero: React.FC<HeroProps> = ({ isMobile }) => {
           {codeSnippets}
         </div>
       )}
-      {/* Animated background elements only on desktop */}
       {!isMobile && (
         <div className="absolute inset-0 overflow-hidden">
           <div 
@@ -148,7 +147,7 @@ const Hero: React.FC<HeroProps> = ({ isMobile }) => {
               <h2 className="text-xl sm:text-2xl md:text-3xl text-gray-700 dark:text-gray-300 mb-4 reveal-on-theme-change">
                 <TextAnimation 
                   text={userData.introduction}
-                  effect="wave"
+                  effect="typewriter"
                   delay={1.3}
                 />
               </h2>
