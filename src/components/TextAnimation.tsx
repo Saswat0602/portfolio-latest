@@ -18,20 +18,36 @@ const TextAnimation: React.FC<TextAnimationProps> = ({
   loop = false
 }) => {
   const [displayedText, setDisplayedText] = useState('');
-  const [hoveredIndex, setHoveredIndex] = useState<number | null>(null);
   const intervalRef = useRef<number | null>(null);
+  const spanRef = useRef<HTMLSpanElement>(null);
+  const [isVisible, setIsVisible] = useState(effect !== 'typewriter');
 
-  // Combined typewriter effect in one useEffect
+  // Only run typewriter if visible
   useEffect(() => {
     if (effect !== 'typewriter') return;
+    const handleScroll = () => {
+      if (!spanRef.current) return;
+      const rect = spanRef.current.getBoundingClientRect();
+      if (rect.top < window.innerHeight && rect.bottom > 0) {
+        setIsVisible(true);
+      } else {
+        setIsVisible(false);
+      }
+    };
+    handleScroll();
+    window.addEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, [effect]);
 
+  // Typewriter effect only if visible
+  useEffect(() => {
+    if (effect !== 'typewriter' || !isVisible) return;
     let index = 0;
-
+    setDisplayedText('');
     const startTyping = () => {
-      intervalRef.current = setInterval(() => {
+      intervalRef.current = window.setInterval(() => {
         index += 1;
         setDisplayedText(text.slice(0, index));
-
         if (index >= text.length) {
           clearInterval(intervalRef.current!);
           if (loop) {
@@ -44,66 +60,45 @@ const TextAnimation: React.FC<TextAnimationProps> = ({
         }
       }, speed);
     };
-
     const delayTimer = setTimeout(() => {
       startTyping();
     }, delay);
-
     return () => {
       clearTimeout(delayTimer);
       if (intervalRef.current) clearInterval(intervalRef.current);
     };
-  }, [text, speed, delay, effect, loop]);
+  }, [text, speed, delay, effect, loop, isVisible]);
 
-  const handleLetterHover = (index: number) => {
-    if (effect === 'pressure') setHoveredIndex(index);
-  };
-
-  const handleLetterLeave = () => {
-    if (effect === 'pressure') setHoveredIndex(null);
-  };
-
+  // CSS-only pressure effect
   const renderPressureEffect = () =>
-    text.split('').map((letter, index) => {
-      let styleClass = '';
-      if (hoveredIndex !== null) {
-        const distance = Math.abs(hoveredIndex - index);
-        if (distance === 0) styleClass = 'transform scale-150 text-blue-500 font-bold';
-        else if (distance === 1) styleClass = 'transform scale-125 text-blue-400';
-        else if (distance === 2) styleClass = 'transform scale-110 text-blue-300';
-      }
-
-      return (
-        <span
-          key={index}
-          className={`inline-block transition-all duration-200 ${styleClass}`}
-          onMouseEnter={() => handleLetterHover(index)}
-          onMouseLeave={handleLetterLeave}
-        >
-          {letter === ' ' ? '\u00A0' : letter}
-        </span>
-      );
-    });
-
-  const renderWaveEffect = () =>
     text.split('').map((letter, index) => (
       <span
         key={index}
-        className="inline-block"
-        style={{
-          animation: `waveAnimation 1.5s ease-in-out infinite`,
-          animationDelay: `${index * 0.1}s`,
-        }}
+        className={`inline-block pressure-effect`}
+        style={{ transitionDelay: `${index * 0.01}s` }}
       >
         {letter === ' ' ? '\u00A0' : letter}
       </span>
     ));
 
+  // CSS-only wave effect
+  const renderWaveEffect = () =>
+    text.split('').map((letter, index) => (
+      <span
+        key={index}
+        className="inline-block wave-effect"
+        style={{ animationDelay: `${index * 0.1}s` }}
+      >
+        {letter === ' ' ? '\u00A0' : letter}
+      </span>
+    ));
+
+  // CSS-only glow effect
   const renderGlowEffect = () =>
     text.split('').map((letter, index) => (
       <span
         key={index}
-        className="inline-block hover:text-transparent hover:bg-clip-text hover:bg-gradient-to-r hover:from-blue-400 hover:to-purple-500 transition-all duration-300"
+        className="inline-block glow-effect"
       >
         {letter === ' ' ? '\u00A0' : letter}
       </span>
@@ -124,7 +119,7 @@ const TextAnimation: React.FC<TextAnimationProps> = ({
     }
   };
 
-  return <span className={className}>{renderEffect()}</span>;
+  return <span ref={spanRef} className={className}>{renderEffect()}</span>;
 };
 
 export default TextAnimation;
